@@ -14,7 +14,7 @@ namespace BankingCLI
             Banca banca = new Banca("Banca Transilvania");
             Bancomat bancomat = new Bancomat(banca, 10000m);
 
-            // Creare utilizator
+            // Creare utilizatori
             Utilizator utilizator = new Utilizator("Ion Popescu");
             ContBancar cont = new ContBancar("1", 5000m, "1234");
             utilizator.AdaugaCont(cont);
