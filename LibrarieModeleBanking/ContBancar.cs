@@ -6,13 +6,20 @@ using System.Threading.Tasks;
 
 namespace LibrarieModeleBanking
 {
+    public enum monede
+    {
+        RON = 1,
+        EUR = 2,
+        USD = 3,
+    }
     public class ContBancar
     {
         public string NumarCont { get; private set; }
+        public monede Moneda { get; private set; }
         public decimal Sold { get; private set; }
         private string PinCriptat;
         private decimal LimitaRetragereZilnica = 5000m;
-
+    
         public ContBancar(string numarCont, decimal soldInitial, string pin)
         {
             NumarCont = numarCont;
@@ -39,7 +46,6 @@ namespace LibrarieModeleBanking
         {
             Sold += suma;
         }
-
         public bool Transfer(ContBancar destinatie, decimal suma)
         {
             if (suma <= Sold)
