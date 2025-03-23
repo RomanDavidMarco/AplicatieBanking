@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ManagerBanci.cs" />
+    <Compile Include="ManagerConturi.cs" />
     <Compile Include="ManagerUtilizatori.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

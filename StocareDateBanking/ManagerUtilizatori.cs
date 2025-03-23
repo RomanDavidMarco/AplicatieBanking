@@ -15,22 +15,59 @@ namespace StocareDateBanking
         public ManagerUtilizatori(string numeFisier)
         {
             this.numeFisier = numeFisier;
-            // se incearca deschiderea fisierului in modul OpenOrCreate
-            // astfel incat sa fie creat daca nu exista
             Stream streamFisierText = File.Open(numeFisier, FileMode.OpenOrCreate);
             streamFisierText.Close();
         }
 
-        public void AddUtilizator(Utilizator utilizator)
+        public void AddUtilizator(List<Utilizator> utilizatori, string nume, string prenume, string cnp, string parola)
         {
-            // instructiunea 'using' va apela la final streamWriterFisierText.Close();
-            // al doilea parametru setat la 'true' al constructorului StreamWriter indica
-            // modul 'append' de deschidere al fisierului
+            Utilizator utilizator = new Utilizator(nume, prenume, cnp, parola);
+
+            utilizatori.Add(utilizator);
+
             using (StreamWriter streamWriterFisierText = new StreamWriter(numeFisier, true))
             {
                 streamWriterFisierText.WriteLine(utilizator.ConversieLaSir_PentruFisier());
             }
+
         }
+
+        public bool StergeUtilizator(Banca banca, List<Utilizator> utilizatori, List<ContBancar> conturi, ManagerConturi managerConturi, string cnp)
+        {
+            Utilizator utilizatorDeSters = utilizatori.FirstOrDefault(u => u.CNP == cnp);
+
+            if (utilizatorDeSters != null)
+            {
+                banca.Utilizatori.Remove(utilizatorDeSters);
+
+                conturi.RemoveAll(cont => utilizatorDeSters.Conturi.Contains(cont));
+
+                utilizatori.Remove(utilizatorDeSters);
+
+                SalveazaUtilizatori(utilizatori);
+                managerConturi.SalveazaConturi(conturi);
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public void AfiseazaUtilizatori(List<Utilizator> utilizatori)
+        {
+            Console.WriteLine("=== Lista Utilizatori ===");
+            if (utilizatori != null)
+            {
+                foreach (var utilizator in utilizatori)
+                {
+                    Console.WriteLine($"{utilizator.Nume} {utilizator.Prenume} - CNP: {utilizator.CNP}");
+                }
+            }
+            Console.ReadLine();
+        }
+
         public List<Utilizator> IncarcaUtilizatori()
         {
             List<Utilizator> utilizatori = new List<Utilizator>();

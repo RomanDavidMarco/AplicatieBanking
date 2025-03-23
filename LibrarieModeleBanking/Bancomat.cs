@@ -8,21 +8,33 @@ namespace LibrarieModeleBanking
 {
     public class Bancomat
     {
-        private Banca banca;
+        public string numeBanca { get; set; }
         public decimal SoldBancomat { get; private set; }
 
-        public Bancomat(Banca banca, decimal soldInitial)
+        public Bancomat(string numeBanca, decimal soldInitial)
         {
-            this.banca = banca;
+            this.numeBanca = numeBanca;
             SoldBancomat = soldInitial;
         }
 
-        public bool RetragereBani(string numarCont, decimal suma)
+        public bool RetragereBani(Utilizator utilizator, string numarCont, decimal suma)
         {
-            var cont = banca.CautaCont(numarCont);
+            var cont = utilizator.Conturi.FirstOrDefault(c => c.NumarCont == numarCont);
             if (cont != null && cont.Retragere(suma) && SoldBancomat >= suma)
             {
                 SoldBancomat -= suma;
+                return true;
+            }
+            return false;
+        }
+
+        public bool DepunereBani(Utilizator utilizator, string numarCont, decimal suma)
+        {
+            var cont = utilizator.Conturi.FirstOrDefault(c => c.NumarCont == numarCont);
+            if (cont != null && suma > 0)
+            {
+                cont.Depunere(suma);
+                SoldBancomat += suma;
                 return true;
             }
             return false;
