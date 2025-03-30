@@ -31,10 +31,9 @@ namespace AplicatieBanking
             // Legarea conturilor la utilizatori prin metoda AddCont()
             foreach (var utilizator in utilizatori)
             {
-                foreach (string idCont in utilizator.IDConturi)
+                foreach (var cont in conturi)
                 {
-                    var cont = conturi.FirstOrDefault(c => c.ID == idCont);
-                    if (cont != null)
+                    if (cont.CNP == utilizator.CNP)
                     {
                         utilizator.AdaugaCont(cont);
                     }
@@ -42,12 +41,11 @@ namespace AplicatieBanking
             }
 
             // Legarea utilizatorilor la bănci prin metoda AdaugaUtilizator()
-            foreach (var banca in banci)
-            {
-                foreach (string cnpUtilizator in banca.cnpUtilizatori)
+            foreach(var banca in banci)
+{
+                foreach (var utilizator in utilizatori)
                 {
-                    var utilizator = utilizatori.FirstOrDefault(u => u.CNP == cnpUtilizator);
-                    if (utilizator != null)
+                    if (utilizator.NumeBanca == banca.Nume)
                     {
                         banca.AdaugaUtilizator(utilizator);
                     }
@@ -81,9 +79,9 @@ namespace AplicatieBanking
                         SelecteazaBanca(banci,utilizatori,conturi, managerUtilizatori, managerConturi);
                         break;
                     case "5":
-                        managerBanci.SalveazaBanci(banci);
-                        managerUtilizatori.SalveazaUtilizatori(utilizatori);
-                        managerConturi.SalveazaConturi(conturi);
+                        //managerBanci.SalveazaBanci(banci);
+                        //managerUtilizatori.SalveazaUtilizatori(utilizatori);
+                       // managerConturi.SalveazaConturi(conturi);
                         return;
                     default:
                         Console.WriteLine("Optiune invalida.");
@@ -257,9 +255,7 @@ namespace AplicatieBanking
                 Console.WriteLine("Eroare: Parola nu poate fi goala sau doar spații. Te rog sa introduci o parola valida.");
             }
 
-            Utilizator utilizator = new Utilizator(nume, prenume, cnp, parola);
-            managerUtilizatori.AddUtilizator(utilizatori, nume, prenume, cnp, parola);
-            banca.AdaugaUtilizator(utilizator);
+            managerUtilizatori.AddUtilizator(utilizatori, banca, nume, prenume, cnp, parola);
 
             Console.WriteLine("Utilizator adaugat cu succes!");
             Console.ReadLine();
@@ -395,6 +391,13 @@ namespace AplicatieBanking
         }
         static void AdaugaCont(ManagerConturi managerConturi, Banca banca, Utilizator utilizator, List<ContBancar> conturi)
         {
+            if (utilizator.Conturi.Count >= 3)
+            {
+                Console.WriteLine("Utilizatorul nu poate avea mai mult de 3 conturi.");
+                Console.ReadLine();
+                return;
+            }
+
             string nume;
 
             while (true)
@@ -434,6 +437,13 @@ namespace AplicatieBanking
 
             monede moneda = (monede)optiune;
 
+            if (utilizator.Conturi.Any(c => c.Moneda == moneda))
+            {
+                Console.WriteLine($"Utilizatorul are deja un cont în moneda {moneda}.");
+                Console.ReadLine();
+                return;
+            }
+
             Console.Write("Depunere initiala: ");
             if (!decimal.TryParse(Console.ReadLine(), out decimal sold) || sold < 0)
             {
@@ -457,13 +467,9 @@ namespace AplicatieBanking
                 Console.WriteLine("Eroare: PIN-ul nu poate fi gol, doar spatii sau sa contina litere. Te rog sa introduci un PIN valid.");
             }
 
-            ContBancar contNou = new ContBancar(banca.IDBanca, utilizator.Conturi, moneda, nume, pin, sold);
-            conturi.Add(contNou);
-            bool OK = utilizator.AdaugaCont(contNou);
-            if (OK)
-            {
-                Console.WriteLine("Cont creat cu succes!");
-            }
+            managerConturi.AddCont(conturi, utilizator, banca.IDBanca, moneda, nume, pin, sold);
+
+            Console.WriteLine("Cont creat cu succes!");
             Console.ReadLine();
         }
 

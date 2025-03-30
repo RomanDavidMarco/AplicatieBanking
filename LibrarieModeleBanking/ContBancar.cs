@@ -15,22 +15,25 @@ namespace LibrarieModeleBanking
     public class ContBancar
     {
         private const char SEPARATOR_PRINCIPAL_FISIER = '|';
+        public string CNP {  get; private set; }
+        private const int CNPVAL = 0;
         public string ID { get; private set; }
-        private const int IDVAL = 0;
+        private const int IDVAL = 1;
         public string NumarCont { get; private set; }
-        private const int NUMARCONT = 1;
+        private const int NUMARCONT = 2;
         public monede Moneda { get; private set; }
-        private const int MONEDA = 2;
+        private const int MONEDA = 3;
         public string NumeCont { get; private set; }
-        private const int NUMECONT = 3;
+        private const int NUMECONT = 4;
         public decimal Sold { get; private set; }
-        private const int SOLD = 4;
+        private const int SOLD = 5;
         public string PinCriptat;
-        private const int PINCRIPTAT = 5;
+        private const int PINCRIPTAT = 6;
         private decimal LimitaRetragereZilnica = 5000m;
 
-        public ContBancar(string idBanca, List<ContBancar> conturiExistente, monede moneda, string nume, string pin, decimal soldInitial)
+        public ContBancar(string cnp, string idBanca, List<ContBancar> conturiExistente, monede moneda, string nume, string pin, decimal soldInitial)
         {
+            CNP = cnp;
             ID = $"{idBanca}{moneda}{GenereazaIDRandom()}";
             NumarCont = GenereazaNumarCont(conturiExistente);
             Moneda = moneda;
@@ -44,6 +47,7 @@ namespace LibrarieModeleBanking
             try
             {
                 string[] date = dateFisier.Split(SEPARATOR_PRINCIPAL_FISIER);
+                CNP = date[CNPVAL];
                 ID = date[IDVAL];
                 NumarCont = date[NUMARCONT];
                 Moneda = (monede)Enum.Parse(typeof(monede), date[MONEDA]);
@@ -59,12 +63,20 @@ namespace LibrarieModeleBanking
 
         private string GenereazaNumarCont(List<ContBancar> conturiExistente)
         {
-            int conturiExistenteNr = conturiExistente?.Count ?? 0;
-            if (conturiExistenteNr >= 3)
+            var numereExistente = conturiExistente
+                .Select(c => int.TryParse(c.NumarCont, out int n) ? n : -1)
+                .Where(n => n > 0)
+                .ToHashSet();
+
+            for (int i = 1; i <= 3; i++)
             {
-                throw new Exception("Utilizatorul nu poate avea mai mult de 3 conturi.");
+                if (!numereExistente.Contains(i))
+                {
+                    return i.ToString();
+                }
             }
-            return (conturiExistenteNr + 1).ToString();
+
+            return "0";
         }
 
         private string GenereazaIDRandom()
@@ -106,8 +118,9 @@ namespace LibrarieModeleBanking
 
         public string ConversieLaSir_PentruFisier()
         {
-            string obiectContPentruFisier = string.Format("{1}{0}{2}{0}{3}{0}{4}{0}{5}{0}{6}{0}",
+            string obiectContPentruFisier = string.Format("{1}{0}{2}{0}{3}{0}{4}{0}{5}{0}{6}{0}{7}{0}",
                  SEPARATOR_PRINCIPAL_FISIER,
+                 CNP,
                  ID,
                  NumarCont,
                  Moneda.ToString(),

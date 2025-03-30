@@ -19,11 +19,12 @@ namespace StocareDateBanking
             streamFisierText.Close();
         }
 
-        public void AddCont(List<ContBancar> conturi, string idBanca, string numeCont, monede moneda, string pin, decimal soldInitial)
+        public void AddCont(List<ContBancar> conturi, Utilizator utilizator, string idBanca,monede moneda, string numeCont, string pin, decimal soldInitial)
         {
-            ContBancar contNou = new ContBancar(idBanca, conturi, moneda, numeCont, pin, soldInitial);
+            ContBancar contNou = new ContBancar(utilizator.CNP, idBanca, utilizator.Conturi, moneda, numeCont, pin, soldInitial);
 
             conturi.Add(contNou);
+            utilizator.AdaugaCont(contNou);
 
             using (StreamWriter streamWriterFisierText = new StreamWriter(numeFisier, true))
             {

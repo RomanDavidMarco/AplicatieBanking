@@ -10,26 +10,26 @@ namespace LibrarieModeleBanking
     {
         private const char SEPARATOR_PRINCIPAL_FISIER = '|';
         private const char SEPARATOR_ID = ';';
+        public string NumeBanca {  get; private set; }
+        private const int NUMEBANCA = 0;
         public string Nume { get; private set; }
-        private const int NUME = 0;
+        private const int NUME = 1;
         public string Prenume { get; private set; }
-        private const int PRENUME = 1;
+        private const int PRENUME = 2;
         public string CNP { get; private set; }
-        private const int CNPVAL = 2;
+        private const int CNPVAL = 3;
         public List<ContBancar> Conturi { get; private set; }
-        public List<string> IDConturi { get; private set; }
-        private const int IDCONTURI = 3;
         public string parolaCriptata;
         private const int PAROLACRIPTATA = 4;
 
 
-        public Utilizator(string nume, string prenume, string cnp, string parola)
+        public Utilizator(string banca, string nume, string prenume, string cnp, string parola)
         {
+            NumeBanca = banca;
             Nume = nume;
             Prenume = prenume;
             CNP = cnp;
             Conturi = new List<ContBancar>();
-            IDConturi = new List<string>();
             parolaCriptata = Securitate.CriptarePin(parola);
         }
         
@@ -38,39 +38,16 @@ namespace LibrarieModeleBanking
             string[] date = dateFisier.Split(SEPARATOR_PRINCIPAL_FISIER);
 
             Conturi = new List<ContBancar>();
-
+            NumeBanca = date[NUMEBANCA];
             Nume = date[NUME];
             Prenume = date[PRENUME];
             CNP = date[CNPVAL];
-            IDConturi = date[IDCONTURI].Split(SEPARATOR_ID).ToList();
             parolaCriptata = date[PAROLACRIPTATA];
         }
 
-        public bool AdaugaCont(ContBancar cont)
+        public void AdaugaCont(ContBancar cont)
         {
-            try
-            {
-                
-                if (Conturi.Count >= 3)
-                {
-                    throw new Exception("Utilizatorul nu poate avea mai mult de 3 conturi.");
-                }
-                
-                if (Conturi.Find(lbda => lbda.Moneda == cont.Moneda) != null)
-                {
-                    throw new Exception("Contul cu aceasta moneda exista deja.");
-                }
-                
                 Conturi.Add(cont);
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                
-                Console.WriteLine($"Eroare la adaugarea contului: {ex.Message}");
-                return false; 
-            }
         }
 
         public List<string> GetIdConturi()
@@ -80,14 +57,12 @@ namespace LibrarieModeleBanking
 
         public string ConversieLaSir_PentruFisier()
         {
-            string idConturiStr = string.Join(SEPARATOR_ID.ToString(), Conturi.Select(cont => cont.ID));
-
             string obiectUtilizatorPentruFisier = string.Format("{1}{0}{2}{0}{3}{0}{4}{0}{5}{0}",
                  SEPARATOR_PRINCIPAL_FISIER,
+                 (NumeBanca ?? " NECUNOSCUT "),
                  (Nume ?? " NECUNOSCUT "),
                  (Prenume ?? " NECUNOSCUT "),
                  CNP.ToString(),
-                 idConturiStr,
                  (parolaCriptata ?? "NECUNOSCUT"));
             return obiectUtilizatorPentruFisier;
         }

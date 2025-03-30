@@ -19,11 +19,12 @@ namespace StocareDateBanking
             streamFisierText.Close();
         }
 
-        public void AddUtilizator(List<Utilizator> utilizatori, string nume, string prenume, string cnp, string parola)
+        public void AddUtilizator(List<Utilizator> utilizatori, Banca banca, string nume, string prenume, string cnp, string parola)
         {
-            Utilizator utilizator = new Utilizator(nume, prenume, cnp, parola);
+            Utilizator utilizator = new Utilizator(banca.Nume, nume, prenume, cnp, parola);
 
             utilizatori.Add(utilizator);
+            banca.AdaugaUtilizator(utilizator);
 
             using (StreamWriter streamWriterFisierText = new StreamWriter(numeFisier, true))
             {
