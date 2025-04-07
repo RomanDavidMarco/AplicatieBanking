@@ -16,14 +16,14 @@ namespace LibrarieModeleBanking
         public string IDBanca { get; private set; }
         private const int IDBANCA = 1;
         public List<Utilizator> Utilizatori;
-        public Bancomat Bancomat { get; set; }
+        //public Bancomat Bancomat { get; set; }
 
         public Banca(string nume, string initiale)
         {
             IDBanca = $"{prefixTara}{initiale}";
             Nume = nume;
             Utilizatori = new List<Utilizator>();
-            Bancomat = new Bancomat(Nume, 10000m);
+            //Bancomat = new Bancomat(Nume, 10000m);
         }
 
         public Banca (string dateFisier)
@@ -31,7 +31,7 @@ namespace LibrarieModeleBanking
             string[] date = dateFisier.Split(SEPARATOR_PRINCIPAL_FISIER);
 
             Utilizatori = new List<Utilizator>();
-            Bancomat = new Bancomat(Nume, 10000m);
+            //Bancomat = new Bancomat(Nume, 10000m);
 
             Nume = date[NUME];
             IDBanca= date[IDBANCA];

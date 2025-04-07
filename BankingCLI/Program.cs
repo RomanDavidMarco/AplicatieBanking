@@ -60,7 +60,7 @@ namespace AplicatieBanking
                 Console.WriteLine("2. Sterge Banca");
                 Console.WriteLine("3. Afisează Banci");
                 Console.WriteLine("4. Selectează Banca");
-                Console.WriteLine("5. Salvare si Iesire");
+                Console.WriteLine("5. Iesire");
                 Console.Write("Alege o optiune: ");
                 string optiune = Console.ReadLine();
 
