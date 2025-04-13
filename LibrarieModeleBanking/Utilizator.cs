@@ -55,6 +55,38 @@ namespace LibrarieModeleBanking
             return Conturi.Select(u => u.ID).ToList();
         }
 
+        public static bool ValidareCNP(string cnp)
+        {
+            if (cnp.Length != 13 || !cnp.All(char.IsDigit))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static bool ValidareExistaUtilizator(List<Utilizator> utilizatori, string cnp)
+        {
+            if (utilizatori != null && utilizatori.Any(u => u.CNP == cnp))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static bool ValidareNumePrenumeParolaUtilizator(string nume)
+        {
+            return string.IsNullOrWhiteSpace(nume);
+        }
+
+        public bool VerificarePinCriptat(string parola)
+        {
+            if (parolaCriptata != Securitate.CriptarePin(parola))
+            {
+                return true;
+            }
+            return false;
+        }
+
         public string ConversieLaSir_PentruFisier()
         {
             string obiectUtilizatorPentruFisier = string.Format("{1}{0}{2}{0}{3}{0}{4}{0}{5}{0}",

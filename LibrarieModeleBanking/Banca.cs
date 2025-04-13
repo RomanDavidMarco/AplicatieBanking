@@ -53,6 +53,20 @@ namespace LibrarieModeleBanking
             return Utilizatori.Select(u => u.CNP).ToList();
         }
 
+        public static bool ValidareNumeBanca(string nume)
+        {
+            return string.IsNullOrWhiteSpace(nume);
+        }
+
+        public static bool ValidarePrefixBanca(string initiale)
+        {
+            if (initiale.Length != 4 || !initiale.All(char.IsLetter))
+            {
+                return true;
+            }
+            return false;
+        }
+
         public string ConversieLaSir_PentruFisier()
         {
             string obiectUtilizatorPentruFisier = string.Format("{1}{0}{2}{0}",

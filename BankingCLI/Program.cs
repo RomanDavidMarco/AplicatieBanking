@@ -96,7 +96,7 @@ namespace AplicatieBanking
             Console.Write("Introdu numele bancii: ");
             string nume = Console.ReadLine();
 
-            if (string.IsNullOrWhiteSpace(nume))
+            if (Banca.ValidareNumeBanca(nume))
             {
                 Console.WriteLine("Eroare: Nici un nume valid introdus");
                 Console.ReadLine();
@@ -106,7 +106,7 @@ namespace AplicatieBanking
             Console.Write("Introdu initialele bancii (4 litere): ");
             string initiale = Console.ReadLine().ToUpper();
 
-            if (initiale.Length != 4 || !initiale.All(char.IsLetter))
+            if (Banca.ValidarePrefixBanca(initiale))
             {
                 Console.WriteLine("Eroare: Initialele trebuie sa contina exact 4 litere.");
                 Console.ReadLine();
@@ -196,14 +196,14 @@ namespace AplicatieBanking
             Console.Write("Introdu CNP-ul utilizatorului: ");
             string cnp = Console.ReadLine();
 
-            if (cnp.Length != 13 || !cnp.All(char.IsDigit))
+            if (Utilizator.ValidareCNP(cnp))
             {
                 Console.WriteLine("CNP-ul introdus este invalid. Asigura-te ca are exact 13 cifre si ca nu contine litere.");
                 Console.ReadLine();
                 return;
             }
 
-            if (banca.Utilizatori!= null && banca.Utilizatori.Any(u => u.CNP == cnp))
+            if (Utilizator.ValidareExistaUtilizator(banca.Utilizatori, cnp))
             {
                 Console.WriteLine("Utilizatorul exista deja!");
                 Console.ReadLine();
@@ -217,7 +217,7 @@ namespace AplicatieBanking
                 Console.Write("Introdu numele utilizatorului: ");
                 nume = Console.ReadLine();
 
-                if (!string.IsNullOrWhiteSpace(nume))
+                if (Utilizator.ValidareNumePrenumeParolaUtilizator(nume))
                 {
                     break;
                 }
@@ -232,7 +232,7 @@ namespace AplicatieBanking
                 Console.Write("Introdu prenumele utilizatorului: ");
                 prenume = Console.ReadLine();
 
-                if (!string.IsNullOrWhiteSpace(prenume))
+                if (Utilizator.ValidareNumePrenumeParolaUtilizator(prenume))
                 {
                     break;
                 }
@@ -247,7 +247,7 @@ namespace AplicatieBanking
                 Console.Write("Introdu parola: ");
                 parola = Console.ReadLine();
 
-                if (!string.IsNullOrWhiteSpace(parola))
+                if (Utilizator.ValidareNumePrenumeParolaUtilizator(parola))
                 {
                     break; 
                 }
@@ -267,7 +267,7 @@ namespace AplicatieBanking
             Console.Write("Introdu CNP-ul utilizatorului de sters: ");
             string cnp = Console.ReadLine();
 
-            if (cnp.Length != 13 || !cnp.All(char.IsDigit))
+            if (Utilizator.ValidareCNP(cnp))
             {
                 Console.WriteLine("CNP-ul introdus este invalid. Asigura-te ca are exact 13 cifre si ca nu contine litere.");
                 Console.ReadLine();
@@ -287,7 +287,7 @@ namespace AplicatieBanking
             string parola = Console.ReadLine();
 
 
-            if (utilizator.parolaCriptata != Securitate.CriptarePin(parola))
+            if (utilizator.VerificarePinCriptat(parola))
             {
                 Console.WriteLine("Parola gresita!");
                 Console.ReadLine();
@@ -319,7 +319,7 @@ namespace AplicatieBanking
             Console.Write("Introdu CNP-ul utilizatorului: ");
             string cnp = Console.ReadLine();
 
-            if (cnp.Length != 13 || !cnp.All(char.IsDigit))
+            if (Utilizator.ValidareCNP(cnp))
             {
                 Console.WriteLine("CNP-ul introdus este invalid. Asigura-te ca are exact 13 cifre si ca nu contine litere.");
                 Console.ReadLine();
@@ -337,7 +337,7 @@ namespace AplicatieBanking
             Console.Write("Introdu parola: ");
             string parola = Console.ReadLine();
 
-            if (utilizator.parolaCriptata != Securitate.CriptarePin(parola))
+            if (utilizator.VerificarePinCriptat(parola))
             {
                 Console.WriteLine("Parola incorecta!");
                 Console.ReadLine();
