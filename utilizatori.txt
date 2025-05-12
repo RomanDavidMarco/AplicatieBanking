@@ -1,3 +1,9 @@
 transilvania|marco|roman|5050109330207|A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=|
-transilvania|comsin|khaled|5050109330206|A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=|
 transilvania|Catalin|Cata|5050109330204|A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=|
+transilvania|Cosmin|Opritescu|5050109330206|A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=|
+SanPaolo|Cosmin|Opritescu|5050109330206|A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=|
+BRD|marco|roman|5050109330207|A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=|
+BRD|Catalin|Cata|5050109330204|A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=|
+BRD|Cosmin|Opritescu|5050109330206|A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=|
+transilvania|Jawwad|Wasim|5050109330201|A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=|
+transilvania|Willy|Lumi|5040920330263|A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=|

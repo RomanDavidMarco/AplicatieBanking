@@ -1,0 +1,106 @@
+[29/04/2025 00:25:42] Cont adaugat: IBAN ROBTRLUSD681914 pentru utilizatorul cu CNP 5050109330207
+[29/04/2025 00:26:01] Cont adaugat: IBAN ROBTRLRON290548 pentru utilizatorul cu CNP 5050109330207
+[29/04/2025 01:43:18] Banca adaugata: CekBank cu ID: ROCHCK
+[29/04/2025 01:43:40] Incercare esuata de stergere banca cu ID inexistent: CekBank
+[29/04/2025 01:44:45] Banca stearsa: Cec Bank cu ID: ROCHCK
+[29/04/2025 01:46:27] Incercare esuata de stergere banca cu ID inexistent: 
+[29/04/2025 01:47:37] Utilizator adaugat: Birtoi Jmekeru - CNP: 5050109330201 - Banca: transilvania
+[29/04/2025 01:48:08] Utilizator sters: Birtoi Jmekeru - CNP: 5050109330201 - Banca: transilvania
+[29/04/2025 01:48:28] Utilizator adaugat: Birtoi Jmekeru - CNP: 5050109330201 - Banca: transilvania
+[29/04/2025 01:48:41] Cont adaugat: IBAN ROBTRLRON761708 pentru utilizatorul cu CNP 5050109330201
+[29/04/2025 01:48:51] Cont adaugat: IBAN ROBTRLUSD522325 pentru utilizatorul cu CNP 5050109330201
+[29/04/2025 01:48:58] Cont adaugat: IBAN ROBTRLEUR711892 pentru utilizatorul cu CNP 5050109330201
+[29/04/2025 01:49:40] Cont sters pentru utilizatorul Birtoi Jmekeru (CNP: 5050109330201) - IBAN: ROBTRLRON761708 - Banca: transilvania
+[29/04/2025 01:49:40] Cont sters pentru utilizatorul Birtoi Jmekeru (CNP: 5050109330201) - IBAN: ROBTRLUSD522325 - Banca: transilvania
+[29/04/2025 01:49:40] Cont sters pentru utilizatorul Birtoi Jmekeru (CNP: 5050109330201) - IBAN: ROBTRLEUR711892 - Banca: transilvania
+[29/04/2025 01:49:40] Utilizator sters: Birtoi Jmekeru - CNP: 5050109330201 - Banca: transilvania
+[29/04/2025 01:56:30] Utilizator adaugat: Birtoi Jmekeru - CNP: 5050109330201 - Banca: transilvania
+[29/04/2025 01:56:40] Cont adaugat: IBAN ROBTRLRON433198 pentru utilizatorul Birtoi Jmekeru cu CNP 5050109330201 - Banca: transilvania
+[29/04/2025 01:56:48] Cont adaugat: IBAN ROBTRLUSD186935 pentru utilizatorul Birtoi Jmekeru cu CNP 5050109330201 - Banca: transilvania
+[29/04/2025 01:56:56] Cont adaugat: IBAN ROBTRLEUR612027 pentru utilizatorul Birtoi Jmekeru cu CNP 5050109330201 - Banca: transilvania
+[29/04/2025 01:57:29] Cont sters pentru utilizatorul Birtoi Jmekeru (CNP: 5050109330201) - IBAN: ROBTRLRON433198 - Banca: transilvania
+[29/04/2025 01:57:29] Cont sters pentru utilizatorul Birtoi Jmekeru (CNP: 5050109330201) - IBAN: ROBTRLUSD186935 - Banca: transilvania
+[29/04/2025 01:57:29] Cont sters pentru utilizatorul Birtoi Jmekeru (CNP: 5050109330201) - IBAN: ROBTRLEUR612027 - Banca: transilvania
+[29/04/2025 01:57:29] Utilizator sters: Birtoi Jmekeru - CNP: 5050109330201 - Banca: transilvania
+[02/05/2025 14:17:29] Banca stearsa: CekBank cu ID: ROCHCK
+[02/05/2025 14:18:15] Banca adaugata: San Paolo cu ID: ROSNPL
+[02/05/2025 14:19:08] Utilizator adaugat: Mark Roman - CNP: 5050109330206 - Banca: San Paolo
+[02/05/2025 14:19:27] Utilizator adaugat: Cosmin Opritescu - CNP: 5050109330205 - Banca: San Paolo
+[02/05/2025 14:32:37] Utilizator adaugat: Cosmin Opritescu - CNP: 5050109330205 - Banca: San Paolo
+[02/05/2025 14:32:51] Utilizator sters: Cosmin Opritescu - CNP: 5050109330205 - Banca: San Paolo
+[02/05/2025 14:33:14] Cont sters: IBAN ROBTRLEUR408252 pentru utilizatorul cu CNP 5050109330206
+[02/05/2025 14:33:14] Cont sters: IBAN ROBTRLRON492870 pentru utilizatorul cu CNP 5050109330206
+[02/05/2025 14:33:14] Utilizator sters: CNP 5050109330206
+[02/05/2025 14:33:14] Banca stearsa: San Paolo cu ID: ROSNPL
+[02/05/2025 14:40:46] Utilizator adaugat: Cosmin Opritescu - CNP: 5050109330206 - Banca: transilvania
+[02/05/2025 14:41:47] Cont adaugat: IBAN ROBTRLRON158294 pentru utilizatorul Cosmin Opritescu cu CNP 5050109330206 - Banca: transilvania
+[02/05/2025 14:41:55] Cont adaugat: IBAN ROBTRLEUR533309 pentru utilizatorul Cosmin Opritescu cu CNP 5050109330206 - Banca: transilvania
+[02/05/2025 14:42:04] Cont adaugat: IBAN ROBTRLUSD942675 pentru utilizatorul Cosmin Opritescu cu CNP 5050109330206 - Banca: transilvania
+[02/05/2025 14:42:26] Banca adaugata: SanPaolo cu ID: ROSNPL
+[02/05/2025 14:43:20] Utilizator adaugat: Cosmin Opritescu - CNP: 5050109330206 - Banca: SanPaolo
+[02/05/2025 14:43:34] Cont adaugat: IBAN ROSNPLRON340230 pentru utilizatorul Cosmin Opritescu cu CNP 5050109330206 - Banca: SanPaolo
+[02/05/2025 14:43:43] Cont adaugat: IBAN ROSNPLEUR636761 pentru utilizatorul Cosmin Opritescu cu CNP 5050109330206 - Banca: SanPaolo
+[02/05/2025 14:43:48] Cont adaugat: IBAN ROSNPLUSD267809 pentru utilizatorul Cosmin Opritescu cu CNP 5050109330206 - Banca: SanPaolo
+[02/05/2025 14:50:25] Cont sters: IBAN ROBTRLRON158294 pentru utilizatorul cu CNP 5050109330206
+[02/05/2025 14:50:25] Cont sters: IBAN ROBTRLEUR533309 pentru utilizatorul cu CNP 5050109330206
+[02/05/2025 14:50:25] Cont sters: IBAN ROBTRLUSD942675 pentru utilizatorul cu CNP 5050109330206
+[02/05/2025 14:50:25] Cont sters: IBAN ROSNPLRON340230 pentru utilizatorul cu CNP 5050109330206
+[02/05/2025 14:50:25] Cont sters: IBAN ROSNPLEUR636761 pentru utilizatorul cu CNP 5050109330206
+[02/05/2025 14:50:25] Cont sters: IBAN ROSNPLUSD267809 pentru utilizatorul cu CNP 5050109330206
+[02/05/2025 14:50:25] Utilizator sters: CNP 5050109330206
+[02/05/2025 14:50:25] Banca stearsa: SanPaolo cu ID: ROSNPL
+[02/05/2025 14:57:26] Banca stearsa: SanPaolo cu ID: ROSNPL
+[02/05/2025 15:10:03] Banca adaugata: tranSiLvAnIa cu ID: ROBTRR
+[02/05/2025 15:10:09] Incercare esuata de stergere banca cu ID inexistent: robtrr
+[02/05/2025 15:10:16] Incercare esuata de stergere banca cu ID inexistent: btrr
+[02/05/2025 15:10:19] Incercare esuata de stergere banca cu ID inexistent: 
+[02/05/2025 15:10:31] Banca stearsa: tranSiLvAnIa cu ID: ROBTRR
+[02/05/2025 15:18:57] Banca adaugata: TRanSilVanIa cu ID: ROBTRL
+[02/05/2025 15:22:21] Banca adaugata: transilvana cu ID: ROBTRR
+[02/05/2025 15:22:28] Banca stearsa: transilvana cu ID: ROBTRR
+[02/05/2025 16:32:15] Cont sters: IBAN ROSNPLRON340230 pentru utilizatorul Cosmin Opritescu cu CNP 5050109330206 - Banca: SanPaolo
+[02/05/2025 16:32:43] Cont adaugat: IBAN ROSNPLRON154622 pentru utilizatorul Cosmin Opritescu cu CNP 5050109330206 - Banca: SanPaolo
+[02/05/2025 16:33:50] Incercare esuata de stergere banca cu ID inexistent: sanpaolo
+[02/05/2025 16:34:02] Incercare esuata de stergere banca cu ID inexistent: rosnpl
+[02/05/2025 16:41:22] Banca stearsa: SanPaolo cu ID: ROSNPL
+[02/05/2025 16:43:40] Banca stearsa: SanPaolo cu ID: ROSNPL
+[02/05/2025 16:44:37] Cont sters: IBAN ROBTRLRON158294 pentru utilizatorul cu CNP 5050109330206
+[02/05/2025 16:44:37] Cont sters: IBAN ROBTRLEUR533309 pentru utilizatorul cu CNP 5050109330206
+[02/05/2025 16:44:37] Cont sters: IBAN ROBTRLUSD942675 pentru utilizatorul cu CNP 5050109330206
+[02/05/2025 16:44:37] Utilizator sters: CNP 5050109330206
+[02/05/2025 16:44:37] Banca stearsa: SanPaolo cu ID: ROSNPL
+[02/05/2025 17:16:17] Cont sters: IBAN ROSNPLRON340230 pentru utilizatorul cu CNP 5050109330206
+[02/05/2025 17:16:17] Cont sters: IBAN ROSNPLEUR636761 pentru utilizatorul cu CNP 5050109330206
+[02/05/2025 17:16:17] Cont sters: IBAN ROSNPLUSD267809 pentru utilizatorul cu CNP 5050109330206
+[02/05/2025 17:16:17] Utilizator sters: CNP 5050109330206
+[02/05/2025 17:16:17] Banca stearsa: SanPaolo cu ID: ROSNPL
+[04/05/2025 15:39:48] Banca adaugata: AmericanExpress cu ID: ROAMEX
+[04/05/2025 15:40:54] Banca stearsa: AmericanExpress cu ID: ROAMEX
+[04/05/2025 16:40:30] Tranzactie de depunere a sumei 497.76 RON in contul ROBTRLRON290548 efectuata cu succes!
+[04/05/2025 16:40:30] Tranzactie de transfer valutar EUR -> RON a sumei 100 EUR -> 497.76 RON din contul ROBTRLEUR788307 in contul ROBTRLRON290548 urmand cursul valutar 4.9776 efectuata cu succes!
+[04/05/2025 16:42:23] Tranzactie de depunere a sumei 248.88 RON in contul ROBTRLRON290548 efectuata cu succes!
+[04/05/2025 16:42:23] Tranzactie de transfer valutar EUR -> RON a sumei 50 EUR -> 248.88 RON din contul ROBTRLEUR788307 in contul ROBTRLRON290548 urmand cursul valutar 4.9776 efectuata cu succes!
+[04/05/2025 16:44:20] Tranzactie de transfer valutar EUR -> RON a sumei 1000000 EUR -> 4977600.00 RON din contul ROBTRLEUR788307 in contul ROBTRLRON290548 urmand cursul valutar 4.9776 esuata!
+[11/05/2025 16:46:05] Tranzactie de depunere a sumei 100 EUR in contul ROBTRLEUR788307 efectuata cu succes!
+[11/05/2025 16:46:09] Tranzactie de retragere a sumei 100 EUR din contul ROBTRLEUR788307 efectuata cu succes!
+[11/05/2025 16:46:41] Tranzactie de depunere a sumei 255.88 RON in contul ROBTRLRON290548 efectuata cu succes!
+[11/05/2025 16:46:41] Tranzactie de transfer valutar EUR -> RON a sumei 50 EUR -> 255.88 RON din contul ROBTRLEUR788307 in contul ROBTRLRON290548 urmand cursul valutar 5.1177 efectuata cu succes!
+[11/05/2025 16:51:58] Tranzactie de depunere a sumei 100 EUR in contul ROBTRLEUR788307 efectuata cu succes!
+[11/05/2025 16:52:10] Tranzactie de retragere a sumei 123 EUR din contul ROBTRLEUR788307 efectuata cu succes!
+[11/05/2025 16:55:59] Tranzactie de depunere a sumei 204.71 RON in contul ROBTRLRON290548 efectuata cu succes!
+[11/05/2025 16:55:59] Tranzactie de transfer valutar EUR -> RON a sumei 40 EUR -> 204.71 RON din contul ROBTRLEUR788307 in contul ROBTRLRON290548 urmand cursul valutar 5.1177 efectuata cu succes!
+[11/05/2025 16:57:23] Tranzactie de depunere a sumei 112.64 USD in contul ROBTRLUSD681914 efectuata cu succes!
+[11/05/2025 16:57:23] Tranzactie de transfer valutar EUR -> USD a sumei 100 EUR -> 112.64 USD din contul ROBTRLEUR788307 in contul ROBTRLUSD681914 urmand cursul valutar 1.1264 efectuata cu succes!
+[11/05/2025 16:58:02] Tranzactie de depunere a sumei 511.77 RON in contul ROBTRLRON290548 efectuata cu succes!
+[11/05/2025 16:58:02] Tranzactie de transfer valutar EUR -> RON a sumei 100 EUR -> 511.77 RON din contul ROBTRLEUR788307 in contul ROBTRLRON290548 urmand cursul valutar 5.1177 efectuata cu succes!
+[11/05/2025 17:03:49] Cont adaugat: IBAN ROBTRL0693748 pentru utilizatorul Catalin Cata cu CNP 5050109330204 - Banca: transilvania
+[11/05/2025 17:04:18] Cont sters: IBAN ROBTRL0693748 pentru utilizatorul Catalin Cata cu CNP 5050109330204 - Banca: transilvania
+[11/05/2025 17:19:37] Cont adaugat: IBAN ROBTRLRON630346 pentru utilizatorul Catalin Cata cu CNP 5050109330204 - Banca: transilvania
+[11/05/2025 17:20:13] Cont adaugat: IBAN ROBTRLEUR427661 pentru utilizatorul Catalin Cata cu CNP 5050109330204 - Banca: transilvania
+[11/05/2025 17:21:00] Tranzactie de depunere a sumei 100 RON in contul ROBTRLRON630346 efectuata cu succes!
+[11/05/2025 17:21:32] Tranzactie de depunere a sumei 50.02 EUR in contul ROBTRLEUR427661 efectuata cu succes!
+[11/05/2025 17:21:32] Tranzactie de transfer valutar RON -> EUR a sumei 256 RON -> 50.02 EUR din contul ROBTRLRON630346 in contul ROBTRLEUR427661 urmand cursul valutar 0.1954 efectuata cu succes!
+[11/05/2025 17:35:28] Utilizator adaugat: Jawwad Wasim - CNP: 5050109330201 - Banca: transilvania
+[12/05/2025 12:43:41] Utilizator adaugat: William Lumi - CNP: 5050109330200 - Banca: transilvania
+[12/05/2025 12:44:01] Utilizator sters: William Lumi - CNP: 5050109330200 - Banca: transilvania
+[12/05/2025 12:56:16] Utilizator adaugat: Willy Lumi - CNP: 5040920330263 - Banca: transilvania

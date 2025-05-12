@@ -48,5 +48,11 @@
     <Compile Include="Securitate.cs" />
     <Compile Include="Utilizator.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\UtilitareBanking\UtilitareBanking.csproj">
+      <Project>{d382e396-1daf-4f0e-95e7-a851d6f6213e}</Project>
+      <Name>UtilitareBanking</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

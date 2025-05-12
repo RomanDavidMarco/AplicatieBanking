@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UtilitareBanking;
 
 namespace LibrarieModeleBanking
 {
@@ -95,23 +97,45 @@ namespace LibrarieModeleBanking
             if (suma <= Sold && suma <= LimitaRetragereZilnica)
             {
                 Sold -= suma;
+                Logger.AddLog($"Tranzactie de retragere a sumei {suma} {Moneda} din contul {ID} efectuata cu succes!");
                 return true;
             }
+            Logger.AddLog($"Tranzactie de retragere a sumei {suma} {Moneda} din contul {ID} esuata!");
             return false;
         }
 
         public void Depunere(decimal suma)
         {
             Sold += suma;
+            Logger.AddLog($"Tranzactie de depunere a sumei {suma} {Moneda} in contul {ID} efectuata cu succes!");
         }
 
         public bool Transfer(ContBancar destinatie, decimal suma)
         {
-            if (suma <= Sold)
+            if (Moneda == destinatie.Moneda)
             {
-                Sold -= suma;
-                destinatie.Depunere(suma);
-                return true;
+                if (suma <= Sold)
+                {
+                    Sold -= suma;
+                    destinatie.Depunere(suma);
+                    Logger.AddLog($"Tranzactie de transfer a sumei {suma} {Moneda} din contul {ID} in contul {destinatie.ID} efectuata cu succes!");
+                    return true;
+                }
+                Logger.AddLog($"Tranzactie de transfer a sumei {suma} {Moneda} din contul {ID} in contul {destinatie.ID} esuata!");
+            }
+            else
+            {
+                decimal rataConversie = CursValutar.SchimbValutar(Moneda.ToString(), destinatie.Moneda.ToString());
+                decimal sumaSchimbata = suma * rataConversie;
+                sumaSchimbata = Math.Round(sumaSchimbata, 2);
+                if (suma <= Sold)
+                {
+                    Sold -= suma;
+                    destinatie.Depunere(sumaSchimbata);
+                    Logger.AddLog($"Tranzactie de transfer valutar {Moneda} -> {destinatie.Moneda} a sumei {suma} {Moneda} -> {sumaSchimbata} {destinatie.Moneda} din contul {ID} in contul {destinatie.ID} urmand cursul valutar {rataConversie} efectuata cu succes!");
+                    return true;
+                }
+                Logger.AddLog($"Tranzactie de transfer valutar {Moneda} -> {destinatie.Moneda} a sumei {suma} {Moneda} -> {sumaSchimbata} {destinatie.Moneda} din contul {ID} in contul {destinatie.ID} urmand cursul valutar {rataConversie} esuata!");
             }
             return false;
         }

@@ -1,5 +1,6 @@
 ﻿using LibrarieModeleBanking;
 using StocareDateBanking;
+using UtilitareBanking;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,6 +25,8 @@ namespace AplicatieBankingForms
         static string locatieFisierSolutie = Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName;
 
         // Initializare manageri
+        Logger logger = new Logger(locatieFisierSolutie + "\\logs.txt");
+        CursValutar cursValutar = new CursValutar(locatieFisierSolutie + "\\CursuriValutare.json");
         ManagerBanci managerBanci = new ManagerBanci(locatieFisierSolutie + "\\banci.txt");
         ManagerUtilizatori managerUtilizatori = new ManagerUtilizatori(locatieFisierSolutie + "\\utilizatori.txt");
         ManagerConturi managerConturi = new ManagerConturi(locatieFisierSolutie + "\\conturi.txt");
@@ -31,6 +34,7 @@ namespace AplicatieBankingForms
         private Banca bancaSelectata;
         private Utilizator utilizatorSelectat;
         private ContBancar contSelectat;
+        private ContBancar contSelectatATM;
         private Panel panelMain;
 
         public Form1()
@@ -42,11 +46,33 @@ namespace AplicatieBankingForms
         {
             panelMain = new Panel
             {
-                Dock = DockStyle.Fill
+                Dock = DockStyle.None,
+                Size = new Size(600, 600)
             };
+
+            this.Size = new Size(1200, 600);
+            // Adaugă panelul la formă
             this.Controls.Add(panelMain);
+
             IncarcaDate();
             AfiseazaMeniuBanci();
+
+            CenterPanel();
+
+            this.Resize += Form1_Resize;
+        }
+
+        private void CenterPanel()
+        {
+            panelMain.Location = new Point(
+                (this.ClientSize.Width - panelMain.Width + panelMain.Width / 4) / 2, 0
+            //(this.ClientSize.Height - panelMain.Height) / 2
+            );
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            CenterPanel();
         }
 
         private void IncarcaDate()
@@ -65,11 +91,16 @@ namespace AplicatieBankingForms
             // Legarea conturilor la utilizatori prin metoda AddCont()
             foreach (var utilizator in utilizatori)
             {
-                foreach (var cont in conturi)
+                Banca banca = banci.FirstOrDefault(b => b.Nume.ToUpper() == utilizator.NumeBanca.ToUpper());
+
+                if (banca != null)
                 {
-                    if (cont.CNP == utilizator.CNP)
+                    foreach (var cont in conturi)
                     {
-                        utilizator.AdaugaCont(cont);
+                        if (cont.CNP == utilizator.CNP && cont.ID.Substring(0, 6) == banca.IDBanca)
+                        {
+                            utilizator.AdaugaCont(cont);
+                        }
                     }
                 }
             }
@@ -247,16 +278,21 @@ namespace AplicatieBankingForms
                     valid = false;
                 }
 
+                if (Banca.ValidareExistaBanca(banci, txtNume.Text, "RO"+txtInitiale.Text))
+                {
+                    valid = false;
+                }
+
                 if (valid)
                 {
-                    managerBanci.AddBanca(banci, txtNume.Text, txtInitiale.Text.ToUpper());
+                    managerBanci.AddBanca(banci, txtNume.Text, txtInitiale.Text);
                     MessageBox.Show("Banca adăugată cu succes!", "Succes", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     AfiseazaMeniuBanci(); // revenim la meniul principal
                 }
                 else
                 {
-                    MessageBox.Show("Datele introduse nu sunt valide! Corectează câmpurile marcate.", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Datele introduse nu sunt valide / Banca exista deja! Corectează câmpurile marcate.", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             };
         }
@@ -501,52 +537,76 @@ namespace AplicatieBankingForms
             };
             panelMain.Controls.Add(lblTitlu);
 
-            // Label + TextBox pentru CNP
+            // CNP
             Label lblCNP = new Label { Text = "CNP:", Location = new Point(20, 70), AutoSize = true };
             TextBox txtCNP = new TextBox { Location = new Point(150, 70), Width = 200 };
             panelMain.Controls.Add(lblCNP);
             panelMain.Controls.Add(txtCNP);
 
-            // Label + TextBox pentru Nume
+            // Nume
             Label lblNume = new Label { Text = "Nume:", Location = new Point(20, 110), AutoSize = true };
             TextBox txtNume = new TextBox { Location = new Point(150, 110), Width = 200 };
             panelMain.Controls.Add(lblNume);
             panelMain.Controls.Add(txtNume);
 
-            // Label + TextBox pentru Prenume
+            // Prenume
             Label lblPrenume = new Label { Text = "Prenume:", Location = new Point(20, 150), AutoSize = true };
             TextBox txtPrenume = new TextBox { Location = new Point(150, 150), Width = 200 };
             panelMain.Controls.Add(lblPrenume);
             panelMain.Controls.Add(txtPrenume);
 
-            // Label + TextBox pentru Parola
+            // Parola
             Label lblParola = new Label { Text = "Parola:", Location = new Point(20, 190), AutoSize = true };
             TextBox txtParola = new TextBox { Location = new Point(150, 190), Width = 200, PasswordChar = '*' };
             panelMain.Controls.Add(lblParola);
             panelMain.Controls.Add(txtParola);
 
-            // Buton de adaugare
+            // Checkbox Termeni și Condiții
+            CheckBox chkTermeni = new CheckBox
+            {
+                Text = "Sunt de acord și am citit ",
+                Location = new Point(20, 230),
+                AutoSize = true
+            };
+            panelMain.Controls.Add(chkTermeni);
+
+            // LinkLabel pentru Termeni
+            LinkLabel linkTermeni = new LinkLabel
+            {
+                Text = "Termenii și Condițiile",
+                Location = new Point(chkTermeni.Right + 5, 230),
+                AutoSize = true
+            };
+            linkTermeni.Click += (s, e) =>
+            {
+                // Poți schimba linkul spre orice pagină sau fișier .txt local
+                System.Diagnostics.Process.Start("explorer", "https://example.com/termeni.pdf");
+                // Sau local: System.Diagnostics.Process.Start("notepad.exe", @"C:\Termeni.txt");
+            };
+            panelMain.Controls.Add(linkTermeni);
+
+            // Buton Adaugă
             Button btnAdauga = new Button
             {
                 Text = "Adaugă Utilizator",
-                Location = new Point(20, 240)
+                Location = new Point(20, 270)
             };
             panelMain.Controls.Add(btnAdauga);
 
-            // Buton inapoi
+            // Buton Înapoi
             Button btnInapoi = new Button
             {
                 Text = "Înapoi",
-                Location = new Point(150, 240)
+                Location = new Point(150, 270)
             };
             btnInapoi.Click += (s, e) => AfiseazaMeniuUtilizatori();
             panelMain.Controls.Add(btnInapoi);
 
+            // Eveniment click Adaugă
             btnAdauga.Click += (s, e) =>
             {
                 bool eroare = false;
 
-                // Resetăm culorile în caz că au fost roșii
                 txtCNP.BackColor = SystemColors.Window;
                 txtNume.BackColor = SystemColors.Window;
                 txtPrenume.BackColor = SystemColors.Window;
@@ -557,28 +617,30 @@ namespace AplicatieBankingForms
                     txtCNP.BackColor = Color.LightCoral;
                     eroare = true;
                 }
-
                 if (Utilizator.ValidareNumePrenumeParolaUtilizator(txtNume.Text))
                 {
                     txtNume.BackColor = Color.LightCoral;
                     eroare = true;
                 }
-
                 if (Utilizator.ValidareNumePrenumeParolaUtilizator(txtPrenume.Text))
                 {
                     txtPrenume.BackColor = Color.LightCoral;
                     eroare = true;
                 }
-
                 if (Utilizator.ValidareNumePrenumeParolaUtilizator(txtParola.Text))
                 {
                     txtParola.BackColor = Color.LightCoral;
                     eroare = true;
                 }
-
                 if (Utilizator.ValidareExistaUtilizator(bancaSelectata.Utilizatori, txtCNP.Text))
                 {
                     MessageBox.Show("Utilizatorul cu acest CNP există deja!", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                if (!chkTermeni.Checked)
+                {
+                    MessageBox.Show("Trebuie să accepți Termenii și Condițiile pentru a continua!", "Avertisment", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -588,14 +650,13 @@ namespace AplicatieBankingForms
                     return;
                 }
 
-                // Dacă totul e valid, adaugăm utilizatorul
+                // Salvăm utilizatorul
                 managerUtilizatori.AddUtilizator(utilizatori, bancaSelectata, txtNume.Text, txtPrenume.Text, txtCNP.Text, txtParola.Text);
-
                 MessageBox.Show("Utilizator adăugat cu succes!", "Succes", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
                 AfiseazaMeniuUtilizatori();
             };
         }
+
 
         private void AfiseazaFormularStergereUtilizator()
         {
@@ -730,11 +791,20 @@ namespace AplicatieBankingForms
 
                     if (confirmare == DialogResult.Yes)
                     {
-                        bancaSelectata.Utilizatori.Remove(utilizatorDeSters);
+                        bool OK = managerUtilizatori.StergeUtilizator(bancaSelectata, utilizatori, conturi, managerConturi, utilizatorDeSters.CNP);
+                        
+                        /*bancaSelectata.Utilizatori.Remove(utilizatorDeSters);
                         utilizatori.Remove(utilizatorDeSters);
-                        managerUtilizatori.SalveazaUtilizatori(utilizatori);
+                        managerUtilizatori.SalveazaUtilizatori(utilizatori);*/
 
-                        MessageBox.Show("Utilizator șters cu succes!", "Succes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        if (OK)
+                        {
+                            MessageBox.Show("Utilizator șters cu succes!", "Succes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Eroare la ștergerea utilizatorului!", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                         AfiseazaMeniuUtilizatori();
                     }
                     else
@@ -860,78 +930,950 @@ namespace AplicatieBankingForms
         {
             panelMain.Controls.Clear();
 
-            var lbl = new Label
+            var lblTitlu = new Label
             {
-                Text = $"=== CONTURI {utilizatorSelectat.Nume} ===",
+                Text = $"=== MENIU CONTURI - ({utilizatorSelectat.Nume} {utilizatorSelectat.Prenume}) ===",
                 Font = new Font("Arial", 16, FontStyle.Bold),
                 Location = new Point(20, 20),
                 AutoSize = true
             };
-            panelMain.Controls.Add(lbl);
+            panelMain.Controls.Add(lblTitlu);
 
-            ListBox lstConturi = new ListBox { Location = new Point(20, 60), Size = new Size(300, 150) };
-            foreach (var cont in utilizatorSelectat.Conturi)
-                lstConturi.Items.Add(cont.NumarCont);
+            // Label căutare
+            var lblCautare = new Label
+            {
+                Text = "Căutare cont (după nume sau IBAN):",
+                Location = new Point(20, 60),
+                AutoSize = true,
+                Font = new Font("Arial", 10, FontStyle.Regular)
+            };
+            panelMain.Controls.Add(lblCautare);
 
+            // TextBox căutare
+            TextBox txtSearch = new TextBox
+            {
+                Location = new Point(20, 85),
+                Width = 300
+            };
+            panelMain.Controls.Add(txtSearch);
+
+            // ListBox pentru conturi
+            ListBox lstConturi = new ListBox
+            {
+                Location = new Point(20, 120),
+                Size = new Size(400, 150)
+            };
             panelMain.Controls.Add(lstConturi);
 
-            Button btnSelecteaza = new Button
+            // Funcție pentru încărcare conturi
+            void IncarcaConturi(string search = "")
             {
-                Text = "Selectează Cont",
-                Location = new Point(20, 230)
-            };
-            btnSelecteaza.Click += (s, e) =>
-            {
-                if (lstConturi.SelectedIndex != -1)
+                lstConturi.Items.Clear();
+                foreach (var cont in utilizatorSelectat.Conturi)
                 {
-                    contSelectat = utilizatorSelectat.Conturi[lstConturi.SelectedIndex];
-                    AfiseazaMeniuATM();
+                    if (string.IsNullOrWhiteSpace(search) ||
+                        cont.NumeCont.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        cont.ID.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        lstConturi.Items.Add($"{cont.NumeCont} - {cont.ID} | Sold: {cont.Sold} {cont.Moneda}");
+                    }
                 }
+            }
+
+            IncarcaConturi();
+
+            txtSearch.TextChanged += (s, e) =>
+            {
+                IncarcaConturi(txtSearch.Text);
             };
-            panelMain.Controls.Add(btnSelecteaza);
-            Button btnInapoi = new Button { Text = "Înapoi la utilizatori", Location = new Point(20, 270), AutoSize = true };
+
+            // Buton "Adaugă Cont"
+            Button btnAdaugaCont = new Button
+            {
+                Text = "Adaugă Cont",
+                Location = new Point(20, 290)
+            };
+            btnAdaugaCont.Click += (s, e) => AfiseazaFormularAdaugareCont();
+            panelMain.Controls.Add(btnAdaugaCont);
+
+            // Buton "Sterge Cont"
+            Button btnStergeCont = new Button
+            {
+                Text = "Șterge Cont",
+                Location = new Point(150, 290)
+            };
+            btnStergeCont.Click += (s, e) => AfiseazaFormularStergereCont();
+            panelMain.Controls.Add(btnStergeCont);
+
+            // Buton "Spre ATM"
+            Button btnATM = new Button
+            {
+                Text = "Spre ATM",
+                Location = new Point(280, 290)
+            };
+            btnATM.Click += (s, e) => AfiseazaFormularAutentificareATM();
+            panelMain.Controls.Add(btnATM);
+
+            // Buton "Înapoi"
+            Button btnInapoi = new Button
+            {
+                Text = "Înapoi la utilizatori",
+                Location = new Point(410, 290)
+            };
             btnInapoi.Click += (s, e) => AfiseazaMeniuUtilizatori();
             panelMain.Controls.Add(btnInapoi);
         }
 
+        /*private void AfiseazaFormularAdaugareCont()
+        {
+            panelMain.Controls.Clear();
+
+            var lblTitlu = new Label
+            {
+                Text = "Adaugare Cont Bancar",
+                Font = new Font("Arial", 16, FontStyle.Bold),
+                Location = new Point(20, 20),
+                AutoSize = true
+            };
+            panelMain.Controls.Add(lblTitlu);
+
+            if (utilizatorSelectat.Conturi.Count >= 3)
+            {
+                MessageBox.Show("Utilizatorul nu poate avea mai mult de 3 conturi.", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                AfiseazaMeniuConturi();
+                return;
+            }
+
+            // Nume Cont
+            var lblNume = new Label { Text = "Nume cont:", Location = new Point(20, 70), AutoSize = true };
+            var txtNume = new TextBox { Location = new Point(20, 95), Width = 300 };
+            panelMain.Controls.Add(lblNume);
+            panelMain.Controls.Add(txtNume);
+
+            // Moneda
+            var lblMoneda = new Label { Text = "Alege moneda:", Location = new Point(20, 130), AutoSize = true };
+            var cmbMoneda = new ComboBox
+            {
+                Location = new Point(20, 155),
+                Width = 300,
+                DropDownStyle = ComboBoxStyle.DropDownList
+            };
+            cmbMoneda.Items.AddRange(new string[] { "RON", "EUR", "USD" });
+            panelMain.Controls.Add(lblMoneda);
+            panelMain.Controls.Add(cmbMoneda);
+
+            // Sold inițial
+            var lblSold = new Label { Text = "Depunere inițială:", Location = new Point(20, 190), AutoSize = true };
+            var txtSold = new TextBox { Location = new Point(20, 215), Width = 300 };
+            panelMain.Controls.Add(lblSold);
+            panelMain.Controls.Add(txtSold);
+
+            // PIN
+            var lblPin = new Label { Text = "PIN cont (doar cifre):", Location = new Point(20, 250), AutoSize = true };
+            var txtPin = new TextBox { Location = new Point(20, 275), Width = 300, PasswordChar = '*' };
+            panelMain.Controls.Add(lblPin);
+            panelMain.Controls.Add(txtPin);
+
+            // Buton Salvare
+            var btnSalveaza = new Button
+            {
+                Text = "Crează cont",
+                Location = new Point(20, 320)
+            };
+            btnSalveaza.Click += (s, e) =>
+            {
+                bool valid = true;
+
+                txtNume.BackColor = Color.White;
+                txtSold.BackColor = Color.White;
+                txtPin.BackColor = Color.White;
+
+                string numeCont = txtNume.Text.Trim();
+                if (string.IsNullOrWhiteSpace(numeCont) || utilizatorSelectat.Conturi.Any(c => c.NumeCont == numeCont))
+                {
+                    txtNume.BackColor = Color.LightCoral;
+                    valid = false;
+                }
+
+                if (cmbMoneda.SelectedIndex == -1)
+                {
+                    MessageBox.Show("Selectează o monedă!", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    valid = false;
+                }
+
+                monede monedaSelectata = (monede)cmbMoneda.SelectedIndex;
+                if (utilizatorSelectat.Conturi.Any(c => c.Moneda == monedaSelectata))
+                {
+                    MessageBox.Show("Utilizatorul are deja un cont în această monedă!", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    valid = false;
+                }
+
+                if (!decimal.TryParse(txtSold.Text, out decimal soldInitial) || soldInitial < 0)
+                {
+                    txtSold.BackColor = Color.LightCoral;
+                    valid = false;
+                }
+
+                string pin = txtPin.Text.Trim();
+                if (string.IsNullOrWhiteSpace(pin) || !pin.All(char.IsDigit))
+                {
+                    txtPin.BackColor = Color.LightCoral;
+                    valid = false;
+                }
+
+                if (valid)
+                {
+                    managerConturi.AddCont(conturi, utilizatorSelectat, bancaSelectata.IDBanca, monedaSelectata, numeCont, pin, soldInitial);
+                    MessageBox.Show("Cont creat cu succes!", "Succes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    AfiseazaMeniuConturi();
+                }
+                else
+                {
+                    MessageBox.Show("Corectează câmpurile marcate!", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            };
+            panelMain.Controls.Add(btnSalveaza);
+
+            // Buton Înapoi
+            var btnInapoi = new Button
+            {
+                Text = "Înapoi",
+                Location = new Point(150, 320)
+            };
+            btnInapoi.Click += (s, e) => AfiseazaMeniuConturi();
+            panelMain.Controls.Add(btnInapoi);
+        }*/
+
+        private void AfiseazaFormularAdaugareCont()
+        {
+            panelMain.Controls.Clear();
+
+            var lblTitlu = new Label
+            {
+                Text = "Adăugare Cont Bancar",
+                Font = new Font("Arial", 16, FontStyle.Bold),
+                Location = new Point(20, 20),
+                AutoSize = true
+            };
+            panelMain.Controls.Add(lblTitlu);
+
+            if (utilizatorSelectat.Conturi.Count >= 3)
+            {
+                MessageBox.Show("Utilizatorul nu poate avea mai mult de 3 conturi.", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                AfiseazaMeniuConturi();
+                return;
+            }
+
+            // Nume cont
+            var lblNume = new Label { Text = "Nume cont:", Location = new Point(20, 70), AutoSize = true };
+            var txtNume = new TextBox { Location = new Point(20, 95), Width = 300 };
+            panelMain.Controls.Add(lblNume);
+            panelMain.Controls.Add(txtNume);
+
+            // Monedă - RadioButtons
+            var lblMoneda = new Label { Text = "Alege moneda:", Location = new Point(20, 130), AutoSize = true };
+            var rbRON = new RadioButton { Text = "RON", Location = new Point(20, 155), AutoSize = true };
+            var rbEUR = new RadioButton { Text = "EUR", Location = new Point(80, 155), AutoSize = true };
+            var rbUSD = new RadioButton { Text = "USD", Location = new Point(150, 155), AutoSize = true };
+            panelMain.Controls.Add(lblMoneda);
+            panelMain.Controls.Add(rbRON);
+            panelMain.Controls.Add(rbEUR);
+            panelMain.Controls.Add(rbUSD);
+
+            // Sold inițial
+            var lblSold = new Label { Text = "Depunere inițială:", Location = new Point(20, 190), AutoSize = true };
+            var txtSold = new TextBox { Location = new Point(20, 215), Width = 300 };
+            panelMain.Controls.Add(lblSold);
+            panelMain.Controls.Add(txtSold);
+
+            // PIN
+            var lblPin = new Label { Text = "PIN cont (doar cifre):", Location = new Point(20, 250), AutoSize = true };
+            var txtPin = new TextBox { Location = new Point(20, 275), Width = 300, PasswordChar = '*' };
+            panelMain.Controls.Add(lblPin);
+            panelMain.Controls.Add(txtPin);
+
+            // Buton Salvare
+            var btnSalveaza = new Button
+            {
+                Text = "Crează cont",
+                Location = new Point(20, 320)
+            };
+
+            btnSalveaza.Click += (s, e) =>
+            {
+                bool valid = true;
+
+                txtNume.BackColor = Color.White;
+                txtSold.BackColor = Color.White;
+                txtPin.BackColor = Color.White;
+
+                string numeCont = txtNume.Text.Trim();
+                if (string.IsNullOrWhiteSpace(numeCont) || utilizatorSelectat.Conturi.Any(c => c.NumeCont == numeCont))
+                {
+                    txtNume.BackColor = Color.LightCoral;
+                    valid = false;
+                }
+
+                monede? monedaAleasa = null;
+                if (rbRON.Checked) monedaAleasa = monede.RON;
+                else if (rbEUR.Checked) monedaAleasa = monede.EUR;
+                else if (rbUSD.Checked) monedaAleasa = monede.USD;
+
+                if (monedaAleasa == null)
+                {
+                    MessageBox.Show("Selectează o monedă!", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    valid = false;
+                }
+                else if (utilizatorSelectat.Conturi.Any(c => c.Moneda == monedaAleasa))
+                {
+                    MessageBox.Show($"Utilizatorul are deja un cont în moneda {monedaAleasa}.", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    valid = false;
+                }
+
+                if (!decimal.TryParse(txtSold.Text, out decimal soldInitial) || soldInitial < 0)
+                {
+                    txtSold.BackColor = Color.LightCoral;
+                    valid = false;
+                }
+
+                string pin = txtPin.Text.Trim();
+                if (string.IsNullOrWhiteSpace(pin) || !pin.All(char.IsDigit))
+                {
+                    txtPin.BackColor = Color.LightCoral;
+                    valid = false;
+                }
+
+                if (valid && monedaAleasa.HasValue)
+                {
+                    managerConturi.AddCont(conturi, utilizatorSelectat, bancaSelectata.IDBanca, monedaAleasa.Value, numeCont, pin, soldInitial);
+                    MessageBox.Show("Cont creat cu succes!", "Succes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    AfiseazaMeniuConturi();
+                }
+                else
+                {
+                    MessageBox.Show("Corectează câmpurile marcate!", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            };
+
+            panelMain.Controls.Add(btnSalveaza);
+
+            // Buton Înapoi
+            var btnInapoi = new Button
+            {
+                Text = "Înapoi",
+                Location = new Point(150, 320)
+            };
+            btnInapoi.Click += (s, e) => AfiseazaMeniuConturi();
+            panelMain.Controls.Add(btnInapoi);
+        }
+
+        private void AfiseazaFormularStergereCont()
+        {
+            panelMain.Controls.Clear();
+
+            var lblTitlu = new Label
+            {
+                Text = "Ștergere Cont Bancar",
+                Font = new Font("Arial", 16, FontStyle.Bold),
+                Location = new Point(20, 20),
+                AutoSize = true
+            };
+            panelMain.Controls.Add(lblTitlu);
+
+            if (utilizatorSelectat.Conturi == null || utilizatorSelectat.Conturi.Count == 0)
+            {
+                MessageBox.Show("Utilizatorul nu are conturi bancare!", "Informație", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                AfiseazaMeniuConturi();
+                return;
+            }
+
+            // ListBox conturi
+            ListBox lstConturi = new ListBox
+            {
+                Location = new Point(20, 60),
+                Size = new Size(400, 150)
+            };
+
+            foreach (var cont in utilizatorSelectat.Conturi)
+                lstConturi.Items.Add($"{cont.NumeCont} | {cont.ID} | {cont.Moneda} | Sold: {cont.Sold}");
+
+            panelMain.Controls.Add(lstConturi);
+
+            // Label + TextBox PIN
+            Label lblPin = new Label
+            {
+                Text = "Introdu PIN-ul contului selectat:",
+                Location = new Point(20, 230),
+                AutoSize = true
+            };
+            panelMain.Controls.Add(lblPin);
+
+            TextBox txtPin = new TextBox
+            {
+                Location = new Point(20, 255),
+                Width = 300,
+                PasswordChar = '*'
+            };
+            panelMain.Controls.Add(txtPin);
+
+            // Buton Ștergere
+            Button btnSterge = new Button
+            {
+                Text = "Șterge Contul",
+                Location = new Point(20, 300)
+            };
+            btnSterge.Click += (s, e) =>
+            {
+                bool valid = true;
+                txtPin.BackColor = Color.White;
+
+                if (lstConturi.SelectedIndex == -1)
+                {
+                    MessageBox.Show("Selectează un cont din listă!", "Avertisment", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(txtPin.Text) || !txtPin.Text.All(char.IsDigit))
+                {
+                    txtPin.BackColor = Color.LightCoral;
+                    valid = false;
+                }
+
+                var contSelectat = utilizatorSelectat.Conturi[lstConturi.SelectedIndex];
+
+                if (valid && contSelectat.VerificaPin(txtPin.Text))
+                {
+                    managerConturi.StergeCont(utilizatorSelectat, conturi, contSelectat.ID);
+
+                    MessageBox.Show("Cont șters cu succes!", "Succes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    AfiseazaMeniuConturi();
+                }
+                else
+                {
+                    txtPin.BackColor = Color.LightCoral;
+                    MessageBox.Show("PIN incorect sau câmp invalid!", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            };
+            panelMain.Controls.Add(btnSterge);
+
+            // Buton Înapoi
+            Button btnInapoi = new Button
+            {
+                Text = "Înapoi",
+                Location = new Point(150, 300)
+            };
+            btnInapoi.Click += (s, e) => AfiseazaMeniuConturi();
+            panelMain.Controls.Add(btnInapoi);
+        }
+
+        private void AfiseazaFormularAutentificareATM()
+        {
+            panelMain.Controls.Clear();
+
+            var lblTitlu = new Label
+            {
+                Text = "Autentificare ATM - Selectează un cont",
+                Font = new Font("Arial", 16, FontStyle.Bold),
+                Location = new Point(20, 20),
+                AutoSize = true
+            };
+            panelMain.Controls.Add(lblTitlu);
+
+            if (utilizatorSelectat.Conturi == null || utilizatorSelectat.Conturi.Count == 0)
+            {
+                MessageBox.Show("Utilizatorul nu are conturi bancare!", "Informație", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                AfiseazaMeniuConturi();
+                return;
+            }
+
+            // ListBox conturi
+            ListBox lstConturi = new ListBox
+            {
+                Location = new Point(20, 60),
+                Size = new Size(450, 150)
+            };
+
+            foreach (var cont in utilizatorSelectat.Conturi)
+                lstConturi.Items.Add($"{cont.NumeCont} | ID: {cont.ID} | {cont.Moneda} | Sold: {cont.Sold}");
+
+            panelMain.Controls.Add(lstConturi);
+
+            // Label + TextBox PIN
+            Label lblPin = new Label
+            {
+                Text = "Introdu PIN-ul contului:",
+                Location = new Point(20, 230),
+                AutoSize = true
+            };
+            panelMain.Controls.Add(lblPin);
+
+            TextBox txtPin = new TextBox
+            {
+                Location = new Point(20, 255),
+                Width = 300,
+                PasswordChar = '*'
+            };
+            panelMain.Controls.Add(txtPin);
+
+            // Buton "Accesează ATM"
+            Button btnATM = new Button
+            {
+                Text = "Accesează ATM",
+                Location = new Point(20, 300)
+            };
+            btnATM.Click += (s, e) =>
+            {
+                bool valid = true;
+                txtPin.BackColor = Color.White;
+
+                if (lstConturi.SelectedIndex == -1)
+                {
+                    MessageBox.Show("Selectează un cont din listă!", "Avertisment", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(txtPin.Text) || !txtPin.Text.All(char.IsDigit))
+                {
+                    txtPin.BackColor = Color.LightCoral;
+                    valid = false;
+                }
+
+                var contSelectat = utilizatorSelectat.Conturi[lstConturi.SelectedIndex];
+
+                if (valid && contSelectat.VerificaPin(txtPin.Text))
+                {
+                    contSelectatATM = contSelectat; // pentru a-l accesa în MeniuATM
+                    AfiseazaMeniuATM();
+                }
+                else
+                {
+                    txtPin.BackColor = Color.LightCoral;
+                    MessageBox.Show("PIN greșit sau câmp invalid!", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            };
+            panelMain.Controls.Add(btnATM);
+
+            // Buton Înapoi
+            Button btnInapoi = new Button
+            {
+                Text = "Înapoi",
+                Location = new Point(150, 300)
+            };
+            btnInapoi.Click += (s, e) => AfiseazaMeniuConturi();
+            panelMain.Controls.Add(btnInapoi);
+        }
 
         private void AfiseazaMeniuATM()
         {
             panelMain.Controls.Clear();
 
-            var lbl = new Label
+            var lblTitlu = new Label
             {
-                Text = $"=== ATM CONT {contSelectat.NumarCont} ===",
+                Text = $"ATM - {contSelectatATM.ID} ({contSelectatATM.NumeCont})",
                 Font = new Font("Arial", 16, FontStyle.Bold),
                 Location = new Point(20, 20),
                 AutoSize = true
             };
-            panelMain.Controls.Add(lbl);
+            panelMain.Controls.Add(lblTitlu);
 
-            // Afișează soldul
-            Label lblSold = new Label
+            // Vizualizare sold
+            Button btnSold = new Button
             {
-                Text = $"Sold: {contSelectat.Sold} lei",
-                Location = new Point(20, 60),
-                AutoSize = true
+                Text = $"1. Vizualizare Sold ({contSelectatATM.Moneda})",
+                Location = new Point(20, 70),
+                Size = new Size(250, 30)
             };
-            panelMain.Controls.Add(lblSold);
+            btnSold.Click += (s, e) =>
+            {
+                MessageBox.Show($"Sold actual: {contSelectatATM.Sold} {contSelectatATM.Moneda}", "Sold", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            };
+            panelMain.Controls.Add(btnSold);
 
-            // Butoane Depunere / Retragere / Transfer / Înapoi
-            // De exemplu:
-            Button btnDepunere = new Button { Text = "Depunere", Location = new Point(20, 100) };
-            btnDepunere.Click += (s, e) => { /* cod depunere */ };
+            // Depunere bani
+            Button btnDepunere = new Button
+            {
+                Text = "2. Depunere Bani",
+                Location = new Point(20, 110),
+                Size = new Size(250, 30)
+            };
+            btnDepunere.Click += (s, e) => AfiseazaFormularDepunere();
             panelMain.Controls.Add(btnDepunere);
 
-            Button btnRetragere = new Button { Text = "Retragere", Location = new Point(20, 140) };
-            btnRetragere.Click += (s, e) => { /* cod retragere */ };
+            // Retragere bani
+            Button btnRetragere = new Button
+            {
+                Text = "3. Retragere Bani",
+                Location = new Point(20, 150),
+                Size = new Size(250, 30)
+            };
+            btnRetragere.Click += (s, e) => AfiseazaFormularRetragere();
             panelMain.Controls.Add(btnRetragere);
 
-            Button btnInapoi = new Button { Text = "Înapoi la conturi", Location = new Point(20, 180), AutoSize = true };
+            // Transfer bani
+            Button btnTransfer = new Button
+            {
+                Text = "4. Transfer Bani",
+                Location = new Point(20, 190),
+                Size = new Size(250, 30)
+            };
+            btnTransfer.Click += (s, e) => AfiseazaFormularTransfer();
+            panelMain.Controls.Add(btnTransfer);
+
+            // Schimb valutar
+            Button btnSchimb = new Button
+            {
+                Text = "5. Schimb Valutar",
+                Location = new Point(20, 230),
+                Size = new Size(250, 30)
+            };
+            btnSchimb.Click += (s, e) => AfiseazaFormularSchimbValutar();
+            panelMain.Controls.Add(btnSchimb);
+
+            // Buton Închide sesiunea
+            Button btnInapoi = new Button
+            {
+                Text = "6. Închide Sesiunea",
+                Location = new Point(20, 280),
+                Size = new Size(250, 30)
+            };
             btnInapoi.Click += (s, e) => AfiseazaMeniuConturi();
             panelMain.Controls.Add(btnInapoi);
         }
 
+        private void AfiseazaFormularDepunere()
+        {
+            panelMain.Controls.Clear();
 
+            var lblTitlu = new Label
+            {
+                Text = $"Depunere bani în cont ({contSelectatATM.NumeCont} - {contSelectatATM.Moneda})",
+                Font = new Font("Arial", 14, FontStyle.Bold),
+                Location = new Point(20, 20),
+                AutoSize = true
+            };
+            panelMain.Controls.Add(lblTitlu);
+
+            var lblSuma = new Label
+            {
+                Text = "Introduceți suma de depus:",
+                Location = new Point(20, 70),
+                AutoSize = true
+            };
+            panelMain.Controls.Add(lblSuma);
+
+            TextBox txtSuma = new TextBox
+            {
+                Location = new Point(20, 95),
+                Width = 200
+            };
+            panelMain.Controls.Add(txtSuma);
+
+            Button btnDepune = new Button
+            {
+                Text = "Depune",
+                Location = new Point(20, 140),
+                AutoSize = true
+            };
+            btnDepune.Click += (s, e) =>
+            {
+                txtSuma.BackColor = Color.White;
+                if (decimal.TryParse(txtSuma.Text, out decimal suma) && suma > 0)
+                {
+                    contSelectatATM.Depunere(suma);
+                    managerConturi.SalveazaConturi(conturi);
+                    MessageBox.Show($"Depunere reușită! Sold nou: {contSelectatATM.Sold} {contSelectatATM.Moneda}", "Succes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    AfiseazaMeniuATM(); // revenim în meniul ATM
+                }
+                else
+                {
+                    txtSuma.BackColor = Color.LightCoral;
+                    MessageBox.Show("Introduceți o sumă validă!", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            };
+            panelMain.Controls.Add(btnDepune);
+
+            Button btnInapoi = new Button
+            {
+                Text = "Înapoi",
+                Location = new Point(120, 140),
+                AutoSize = true
+            };
+            btnInapoi.Click += (s, e) => AfiseazaMeniuATM();
+            panelMain.Controls.Add(btnInapoi);
+        }
+
+        private void AfiseazaFormularRetragere()
+        {
+            panelMain.Controls.Clear();
+
+            var lblTitlu = new Label
+            {
+                Text = $"Retragere bani din cont ({contSelectatATM.NumeCont} - {contSelectatATM.Moneda})",
+                Font = new Font("Arial", 14, FontStyle.Bold),
+                Location = new Point(20, 20),
+                AutoSize = true
+            };
+            panelMain.Controls.Add(lblTitlu);
+
+            var lblSuma = new Label
+            {
+                Text = "Introduceți suma de retras:",
+                Location = new Point(20, 70),
+                AutoSize = true
+            };
+            panelMain.Controls.Add(lblSuma);
+
+            TextBox txtSuma = new TextBox
+            {
+                Location = new Point(20, 95),
+                Width = 200
+            };
+            panelMain.Controls.Add(txtSuma);
+
+            Button btnRetrage = new Button
+            {
+                Text = "Retrage",
+                Location = new Point(20, 140),
+                AutoSize = true
+            };
+            btnRetrage.Click += (s, e) =>
+            {
+                txtSuma.BackColor = Color.White;
+                if (decimal.TryParse(txtSuma.Text, out decimal suma) && suma > 0)
+                {
+                    if (contSelectatATM.Retragere(suma))
+                    {
+                        managerConturi.SalveazaConturi(conturi);
+                        MessageBox.Show($"Retragere reușită! Sold nou: {contSelectatATM.Sold} {contSelectatATM.Moneda}", "Succes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        AfiseazaMeniuATM();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Fonduri insuficiente sau limită zilnică depășită!", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+                else
+                {
+                    txtSuma.BackColor = Color.LightCoral;
+                    MessageBox.Show("Introduceți o sumă validă!", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            };
+            panelMain.Controls.Add(btnRetrage);
+
+            Button btnInapoi = new Button
+            {
+                Text = "Înapoi",
+                Location = new Point(120, 140),
+                AutoSize = true
+            };
+            btnInapoi.Click += (s, e) => AfiseazaMeniuATM();
+            panelMain.Controls.Add(btnInapoi);
+        }
+
+        private void AfiseazaFormularTransfer()
+        {
+            panelMain.Controls.Clear();
+
+            var lblTitlu = new Label
+            {
+                Text = "Transfer Bani",
+                Font = new Font("Arial", 14, FontStyle.Bold),
+                Location = new Point(20, 20),
+                AutoSize = true
+            };
+            panelMain.Controls.Add(lblTitlu);
+
+            // IBAN destinatar
+            var lblDest = new Label { Text = "ID/IBAN destinatar:", Location = new Point(20, 70), AutoSize = true };
+            TextBox txtDestinatar = new TextBox { Location = new Point(20, 95), Width = 300 };
+            panelMain.Controls.Add(lblDest);
+            panelMain.Controls.Add(txtDestinatar);
+
+            // Sumă
+            var lblSuma = new Label { Text = "Suma de transferat:", Location = new Point(20, 140), AutoSize = true };
+            TextBox txtSuma = new TextBox { Location = new Point(20, 165), Width = 150 };
+            panelMain.Controls.Add(lblSuma);
+            panelMain.Controls.Add(txtSuma);
+
+            // Buton transfer
+            Button btnTransfer = new Button
+            {
+                Text = "Transferă",
+                Location = new Point(20, 210),
+                AutoSize = true
+            };
+            btnTransfer.Click += (s, e) =>
+            {
+                txtDestinatar.BackColor = Color.White;
+                txtSuma.BackColor = Color.White;
+
+                var contDest = conturi.FirstOrDefault(c => c.ID == txtDestinatar.Text.Trim());
+
+                if (contDest == null)
+                {
+                    txtDestinatar.BackColor = Color.LightCoral;
+                    MessageBox.Show("Cont destinatar inexistent!", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (!decimal.TryParse(txtSuma.Text, out decimal suma) || suma <= 0)
+                {
+                    txtSuma.BackColor = Color.LightCoral;
+                    MessageBox.Show("Introduceți o sumă validă!", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                bool succes = contSelectatATM.Transfer(contDest, suma);
+
+                if (succes)
+                {
+                    managerConturi.SalveazaConturi(conturi);
+
+                    if (contSelectatATM.Moneda != contDest.Moneda)
+                    {
+                        decimal curs = CursValutar.SchimbValutar(contSelectatATM.Moneda.ToString(), contDest.Moneda.ToString());
+                        MessageBox.Show($"Moneda diferită! Conversie automată: {contSelectatATM.Moneda} → {contDest.Moneda} @ curs {curs}\n\nTransfer reușit!\nSold nou: {contSelectatATM.Sold} {contSelectatATM.Moneda}", "Transfer Finalizat", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Transfer reușit! Sold nou: {contSelectatATM.Sold} {contSelectatATM.Moneda}", "Transfer Finalizat", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+
+                    AfiseazaMeniuATM();
+                }
+                else
+                {
+                    MessageBox.Show("Fonduri insuficiente pentru transfer!", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            };
+            panelMain.Controls.Add(btnTransfer);
+
+            Button btnInapoi = new Button
+            {
+                Text = "Înapoi",
+                Location = new Point(120, 210),
+                AutoSize = true
+            };
+            btnInapoi.Click += (s, e) => AfiseazaMeniuATM();
+            panelMain.Controls.Add(btnInapoi);
+        }
+
+        private void AfiseazaFormularSchimbValutar()
+        {
+            panelMain.Controls.Clear();
+
+            var lblTitlu = new Label
+            {
+                Text = "Schimb Valutar între Conturi",
+                Font = new Font("Arial", 14, FontStyle.Bold),
+                Location = new Point(20, 20),
+                AutoSize = true
+            };
+            panelMain.Controls.Add(lblTitlu);
+
+            var alteConturi = utilizatorSelectat.Conturi.Where(c => c != contSelectatATM).ToList();
+
+            if (alteConturi.Count == 0)
+            {
+                MessageBox.Show("Nu există alte conturi disponibile pentru schimb valutar.", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                AfiseazaMeniuATM();
+                return;
+            }
+
+            // Selectare cont destinatar
+            var lblSelectie = new Label
+            {
+                Text = "Selectează contul destinatar:",
+                Location = new Point(20, 60),
+                AutoSize = true
+            };
+            panelMain.Controls.Add(lblSelectie);
+
+            ComboBox cmbContDestinatie = new ComboBox
+            {
+                Location = new Point(20, 85),
+                Width = 300,
+                DropDownStyle = ComboBoxStyle.DropDownList
+            };
+            foreach (var c in alteConturi)
+            {
+                cmbContDestinatie.Items.Add($"{c.NumeCont} - {c.Moneda} - {c.ID}");
+            }
+            panelMain.Controls.Add(cmbContDestinatie);
+
+            // Suma
+            var lblSuma = new Label
+            {
+                Text = "Introduceți suma de schimbat:",
+                Location = new Point(20, 130),
+                AutoSize = true
+            };
+            TextBox txtSuma = new TextBox
+            {
+                Location = new Point(20, 155),
+                Width = 150
+            };
+            panelMain.Controls.Add(lblSuma);
+            panelMain.Controls.Add(txtSuma);
+
+            // Buton schimb valutar
+            Button btnSchimba = new Button
+            {
+                Text = "Execută Schimb",
+                Location = new Point(20, 200),
+                AutoSize = true
+            };
+            btnSchimba.Click += (s, e) =>
+            {
+                txtSuma.BackColor = Color.White;
+
+                if (cmbContDestinatie.SelectedIndex == -1)
+                {
+                    MessageBox.Show("Selectați un cont destinatar!", "Avertisment", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (!decimal.TryParse(txtSuma.Text, out decimal suma) || suma <= 0)
+                {
+                    txtSuma.BackColor = Color.LightCoral;
+                    MessageBox.Show("Introduceți o sumă validă!", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var contDest = alteConturi[cmbContDestinatie.SelectedIndex];
+                var curs = CursValutar.SchimbValutar(contSelectatATM.Moneda.ToString(), contDest.Moneda.ToString());
+
+                var confirmare = MessageBox.Show(
+                    $"Se va face conversia {suma} {contSelectatATM.Moneda} în {contDest.Moneda} (curs: {curs}). Continuăm?",
+                    "Confirmare Schimb Valutar",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (confirmare == DialogResult.Yes)
+                {
+                    bool rezultat = contSelectatATM.Transfer(contDest, suma);
+                    if (rezultat)
+                    {
+                        managerConturi.SalveazaConturi(conturi);
+                        MessageBox.Show("Schimb valutar efectuat cu succes!", "Succes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        AfiseazaMeniuATM();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Transfer eșuat. Verifică suma sau soldul disponibil.", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            };
+            panelMain.Controls.Add(btnSchimba);
+
+            // Buton Înapoi
+            Button btnInapoi = new Button
+            {
+                Text = "Înapoi",
+                Location = new Point(150, 200),
+                AutoSize = true
+            };
+            btnInapoi.Click += (s, e) => AfiseazaMeniuATM();
+            panelMain.Controls.Add(btnInapoi);
+        }
     }
 }

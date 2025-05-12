@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StocareDateBanking", "Stoca
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AplicatieBankingForms", "AplicatieBankingForms\AplicatieBankingForms.csproj", "{F7CD9D63-86F2-4CEC-87CE-10D88C8DD8BC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilitareBanking", "UtilitareBanking\UtilitareBanking.csproj", "{D382E396-1DAF-4F0E-95E7-A851D6F6213E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{F7CD9D63-86F2-4CEC-87CE-10D88C8DD8BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7CD9D63-86F2-4CEC-87CE-10D88C8DD8BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7CD9D63-86F2-4CEC-87CE-10D88C8DD8BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D382E396-1DAF-4F0E-95E7-A851D6F6213E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D382E396-1DAF-4F0E-95E7-A851D6F6213E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D382E396-1DAF-4F0E-95E7-A851D6F6213E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D382E396-1DAF-4F0E-95E7-A851D6F6213E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

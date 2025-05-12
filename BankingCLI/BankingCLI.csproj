@@ -63,6 +63,10 @@
       <Project>{9eb05daf-07d7-418e-ae2e-8b200c84ff2f}</Project>
       <Name>StocareDateBanking</Name>
     </ProjectReference>
+    <ProjectReference Include="..\UtilitareBanking\UtilitareBanking.csproj">
+      <Project>{d382e396-1daf-4f0e-95e7-a851d6f6213e}</Project>
+      <Name>UtilitareBanking</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

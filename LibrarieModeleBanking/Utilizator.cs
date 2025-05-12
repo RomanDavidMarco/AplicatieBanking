@@ -57,10 +57,28 @@ namespace LibrarieModeleBanking
 
         public static bool ValidareCNP(string cnp)
         {
-            if (cnp.Length != 13 || !cnp.All(char.IsDigit))
+            if (string.IsNullOrEmpty(cnp) || cnp.Length != 13 || !cnp.All(char.IsDigit))
             {
                 return true;
             }
+
+            string constanta = "279146358279";
+            int suma = 0;
+
+            for (int i = 0; i < 12; i++)
+            {
+                suma += (cnp[i] - '0') * (constanta[i] - '0');
+            }
+
+            int rest = suma % 11;
+            int cifraControl = (rest < 10) ? rest : 1;
+
+            // verificam daca cifra de control calculata coincide cu ultima cifra (a 13-a)
+            if ((cnp[12] - '0') != cifraControl)
+            {
+                return true;
+            }
+
             return false;
         }
 

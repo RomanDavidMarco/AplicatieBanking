@@ -67,6 +67,15 @@ namespace LibrarieModeleBanking
             return false;
         }
 
+        public static bool ValidareExistaBanca(List<Banca> banci, string nume, string id)
+        {
+            if (banci != null && (banci.Any(u => u.Nume.ToUpper() == nume.ToUpper()) || banci.Any(u => u.IDBanca.ToUpper() == id.ToUpper())))
+            {
+                return true;
+            }
+            return false;
+        }
+
         public string ConversieLaSir_PentruFisier()
         {
             string obiectUtilizatorPentruFisier = string.Format("{1}{0}{2}{0}",

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LibrarieModeleBanking;
+using UtilitareBanking;
 
 namespace StocareDateBanking
 {
@@ -15,6 +16,7 @@ namespace StocareDateBanking
         public ManagerBanci(string numeFisier)
         {
             this.numeFisier = numeFisier;
+
             Stream streamFisierText = File.Open(numeFisier, FileMode.OpenOrCreate);
             streamFisierText.Close();
         }
@@ -30,11 +32,13 @@ namespace StocareDateBanking
             {
                 streamWriterFisierText.WriteLine(bancaNoua.ConversieLaSir_PentruFisier());
             }
+
+            Logger.AddLog($"Banca adaugata: {bancaNoua.Nume} cu ID: {bancaNoua.IDBanca}");
         }
 
         public bool StergeBanca(List<Banca> banci, List<Utilizator> utilizatori, List<ContBancar> conturi, ManagerConturi managerConturi, ManagerUtilizatori managerUtilizatori, string idBanca)
         {
-            Banca bancaDeSters = banci.FirstOrDefault(b => b.IDBanca == idBanca);
+            Banca bancaDeSters = banci.FirstOrDefault(b => b.IDBanca.ToUpper() == idBanca || b.Nume.ToUpper() == idBanca);
 
             if (bancaDeSters != null)
             {
@@ -42,15 +46,22 @@ namespace StocareDateBanking
 
                 foreach (var cnp in cnpUtilizatoriDeSters)
                 {
-                    Utilizator utilizatorDeSters = utilizatori.FirstOrDefault(u => u.CNP == cnp);
+                    Utilizator utilizatorDeSters = bancaDeSters.Utilizatori.FirstOrDefault(u => u.CNP == cnp);
 
-                    if (utilizatorDeSters != null)
+                    if (utilizatorDeSters != null && utilizatorDeSters.NumeBanca.ToUpper() == bancaDeSters.Nume.ToUpper())
                     {
-                        conturi.RemoveAll(cont => utilizatorDeSters.Conturi.Contains(cont));
+                        List<ContBancar> conturiUtilizator = utilizatorDeSters.Conturi;
+
+                        foreach (var cont in conturiUtilizator)
+                        {
+                            // Sterge contul din lista generala
+                            conturi.Remove(cont);
+                            Logger.AddLog($"Cont sters: IBAN {cont.ID} pentru utilizatorul cu CNP {cnp}");
+                        }
 
                         utilizatori.Remove(utilizatorDeSters);
-
-                        Console.WriteLine($"Utilizatorul cu CNP {cnp} si conturile sale au fost șterse cu succes!");
+                        Console.WriteLine($"Utilizatorul cu CNP {cnp} si conturile sale au fost sterse cu succes!");
+                        Logger.AddLog($"Utilizator sters: CNP {cnp}");
                     }
                 }
 
@@ -60,10 +71,13 @@ namespace StocareDateBanking
                 managerConturi.SalveazaConturi(conturi);
                 managerUtilizatori.SalveazaUtilizatori(utilizatori);
 
+                Logger.AddLog($"Banca stearsa: {bancaDeSters.Nume} cu ID: {bancaDeSters.IDBanca}");
+
                 return true;
             }
             else
             {
+                Logger.AddLog($"Incercare esuata de stergere banca cu ID inexistent: {idBanca}");
                 return false;
             }
         }

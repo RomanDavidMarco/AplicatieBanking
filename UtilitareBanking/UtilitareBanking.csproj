@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9EB05DAF-07D7-418E-AE2E-8B200C84FF2F}</ProjectGuid>
+    <ProjectGuid>{D382E396-1DAF-4F0E-95E7-A851D6F6213E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>StocareDateBanking</RootNamespace>
-    <AssemblyName>StocareDateBanking</AssemblyName>
+    <RootNamespace>UtilitareBanking</RootNamespace>
+    <AssemblyName>UtilitareBanking</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -41,20 +44,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ManagerBanci.cs" />
-    <Compile Include="ManagerConturi.cs" />
-    <Compile Include="ManagerUtilizatori.cs" />
+    <Compile Include="CursValutar.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LibrarieModeleBanking\LibrarieModeleBanking.csproj">
-      <Project>{44111464-4335-4854-8cc3-1d75b50438e0}</Project>
-      <Name>LibrarieModeleBanking</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\UtilitareBanking\UtilitareBanking.csproj">
-      <Project>{d382e396-1daf-4f0e-95e7-a851d6f6213e}</Project>
-      <Name>UtilitareBanking</Name>
-    </ProjectReference>
+    <None Include="Properties\packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

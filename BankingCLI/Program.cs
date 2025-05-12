@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using StocareDateBanking;
 using LibrarieModeleBanking;
+using UtilitareBanking;
 using System.IO;
 
 namespace AplicatieBanking
@@ -14,6 +15,8 @@ namespace AplicatieBanking
             string locatieFisierSolutie = Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName;
 
             // Initializare manageri
+            Logger logger = new Logger(locatieFisierSolutie + "\\logs.txt");
+            CursValutar cursValutar = new CursValutar(locatieFisierSolutie + "\\CursuriValutare.json");
             ManagerBanci managerBanci = new ManagerBanci(locatieFisierSolutie + "\\banci.txt");
             ManagerUtilizatori managerUtilizatori = new ManagerUtilizatori(locatieFisierSolutie + "\\utilizatori.txt");
             ManagerConturi managerConturi = new ManagerConturi(locatieFisierSolutie + "\\conturi.txt");
@@ -23,7 +26,6 @@ namespace AplicatieBanking
             List<Utilizator> utilizatori = managerUtilizatori.IncarcaUtilizatori();
             List<ContBancar> conturi = managerConturi.IncarcaConturi();
 
-
             /*managerBanci.AfiseazaBanci(banci);
             managerUtilizatori.AfiseazaUtilizatori(utilizatori);
             managerConturi.AfiseazaConturi(conturi);*/
@@ -31,18 +33,23 @@ namespace AplicatieBanking
             // Legarea conturilor la utilizatori prin metoda AddCont()
             foreach (var utilizator in utilizatori)
             {
-                foreach (var cont in conturi)
+                Banca banca = banci.FirstOrDefault(b => b.Nume.ToUpper() == utilizator.NumeBanca.ToUpper());
+
+                if (banca != null)
                 {
-                    if (cont.CNP == utilizator.CNP)
+                    foreach (var cont in conturi)
                     {
-                        utilizator.AdaugaCont(cont);
+                        if (cont.CNP == utilizator.CNP && cont.ID.Substring(0, 6) == banca.IDBanca)
+                        {
+                            utilizator.AdaugaCont(cont);
+                        }
                     }
                 }
             }
 
             // Legarea utilizatorilor la bănci prin metoda AdaugaUtilizator()
-            foreach(var banca in banci)
-{
+            foreach (var banca in banci)
+            {
                 foreach (var utilizator in utilizatori)
                 {
                     if (utilizator.NumeBanca == banca.Nume)
@@ -70,18 +77,15 @@ namespace AplicatieBanking
                         AdaugaBanca(managerBanci, banci);
                         break;
                     case "2":
-                        StergeBanca(managerBanci, banci, managerUtilizatori, utilizatori,  managerConturi, conturi);
+                        StergeBanca(managerBanci, banci, managerUtilizatori, utilizatori, managerConturi, conturi);
                         break;
                     case "3":
                         managerBanci.AfiseazaBanci(banci);
                         break;
                     case "4":
-                        SelecteazaBanca(banci,utilizatori,conturi, managerUtilizatori, managerConturi);
+                        SelecteazaBanca(banci, utilizatori, conturi, managerUtilizatori, managerConturi);
                         break;
                     case "5":
-                        //managerBanci.SalveazaBanci(banci);
-                        //managerUtilizatori.SalveazaUtilizatori(utilizatori);
-                       // managerConturi.SalveazaConturi(conturi);
                         return;
                     default:
                         Console.WriteLine("Optiune invalida.");
@@ -113,6 +117,13 @@ namespace AplicatieBanking
                 return;
             }
 
+            if (Banca.ValidareExistaBanca(banci, nume, "RO"+initiale))
+            {
+                Console.WriteLine("Banca exista deja!");
+                Console.ReadLine();
+                return;
+            }
+
             managerBanci.AddBanca(banci, nume, initiale);
             Console.WriteLine("Banca a fost adaugata cu succes!");
             Console.ReadLine();
@@ -120,8 +131,8 @@ namespace AplicatieBanking
 
         static void StergeBanca(ManagerBanci managerBanci, List<Banca> banci, ManagerUtilizatori managerUtilizatori, List<Utilizator> utilizatori, ManagerConturi managerConturi, List<ContBancar> conturi)
         {
-            Console.Write("Introdu ID-ul bancii: ");
-            string id = Console.ReadLine();
+            Console.Write("Introdu ID-ul / numele bancii: ");
+            string id = Console.ReadLine().ToUpper();
 
             bool OK = managerBanci.StergeBanca(banci, utilizatori, conturi, managerConturi, managerUtilizatori, id);
             if (OK)
@@ -132,7 +143,7 @@ namespace AplicatieBanking
             {
                 Console.WriteLine("Eroare la stergerea bancii!");
             }
-                Console.ReadLine();
+            Console.ReadLine();
         }
 
         // ===================== MENIU UTILIZATORI =====================
@@ -217,7 +228,7 @@ namespace AplicatieBanking
                 Console.Write("Introdu numele utilizatorului: ");
                 nume = Console.ReadLine();
 
-                if (Utilizator.ValidareNumePrenumeParolaUtilizator(nume))
+                if (!Utilizator.ValidareNumePrenumeParolaUtilizator(nume))
                 {
                     break;
                 }
@@ -232,7 +243,7 @@ namespace AplicatieBanking
                 Console.Write("Introdu prenumele utilizatorului: ");
                 prenume = Console.ReadLine();
 
-                if (Utilizator.ValidareNumePrenumeParolaUtilizator(prenume))
+                if (!Utilizator.ValidareNumePrenumeParolaUtilizator(prenume))
                 {
                     break;
                 }
@@ -247,12 +258,12 @@ namespace AplicatieBanking
                 Console.Write("Introdu parola: ");
                 parola = Console.ReadLine();
 
-                if (Utilizator.ValidareNumePrenumeParolaUtilizator(parola))
+                if (!Utilizator.ValidareNumePrenumeParolaUtilizator(parola))
                 {
-                    break; 
+                    break;
                 }
 
-                Console.WriteLine("Eroare: Parola nu poate fi goala sau doar spații. Te rog sa introduci o parola valida.");
+                Console.WriteLine("Eroare: Parola nu poate fi goala sau doar spatii. Te rog sa introduci o parola valida.");
             }
 
             managerUtilizatori.AddUtilizator(utilizatori, banca, nume, prenume, cnp, parola);
@@ -294,13 +305,6 @@ namespace AplicatieBanking
                 return;
             }
 
-            var conturiDeSters = utilizator.Conturi;
-
-            foreach (var cont in conturiDeSters)
-            {
-                managerConturi.StergeCont(utilizator, conturi, cont.ID);
-            }
-
             bool OK = managerUtilizatori.StergeUtilizator(banca, utilizatori, conturi, managerConturi, cnp);
             if (OK)
             {
@@ -310,7 +314,7 @@ namespace AplicatieBanking
             {
                 Console.WriteLine("Eroare la adaugarea utilizatorului!");
             }
-                Console.ReadLine();
+            Console.ReadLine();
         }
 
         // ===================== MENIU CONTURI BANCARE =====================
@@ -410,7 +414,7 @@ namespace AplicatieBanking
                     break;
                 }
 
-                Console.WriteLine("Eroare: Numele nu poate fi gol sau doar spații. Te rog să introduci un nume valid.");
+                Console.WriteLine("Eroare: Numele nu poate fi gol sau doar spatii. Te rog să introduci un nume valid.");
             }
 
             if (utilizator.Conturi.Any(c => c.NumeCont == nume))
@@ -439,7 +443,7 @@ namespace AplicatieBanking
 
             if (utilizator.Conturi.Any(c => c.Moneda == moneda))
             {
-                Console.WriteLine($"Utilizatorul are deja un cont în moneda {moneda}.");
+                Console.WriteLine($"Utilizatorul are deja un cont in moneda {moneda}.");
                 Console.ReadLine();
                 return;
             }
@@ -457,7 +461,7 @@ namespace AplicatieBanking
             while (true)
             {
                 Console.Write("Introdu PIN-ul noului cont: ");
-                pin= Console.ReadLine();
+                pin = Console.ReadLine();
 
                 if (!string.IsNullOrWhiteSpace(pin) && pin.All(char.IsDigit))
                 {
@@ -482,7 +486,7 @@ namespace AplicatieBanking
                 return;
             }
 
-            Console.WriteLine("=== Selecteaza un cont pentru a-l șterge ===");
+            Console.WriteLine("=== Selecteaza un cont pentru a-l sterge ===");
 
             // Afișează lista conturilor disponibile
             for (int i = 0; i < utilizator.Conturi.Count; i++)
@@ -506,7 +510,7 @@ namespace AplicatieBanking
             Console.Write("Introdu PIN-ul contului: ");
             string pin = Console.ReadLine();
 
-            if (cont.PinCriptat != Securitate.CriptarePin(pin))
+            if (cont.VerificaPin(pin))
             {
                 Console.WriteLine("PIN gresit!");
                 Console.ReadLine();
@@ -557,6 +561,11 @@ namespace AplicatieBanking
                 return;
             }
 
+            MeniuATM(managerConturi, utilizator, cont, conturi);
+        }
+
+        static void MeniuATM (ManagerConturi managerConturi, Utilizator utilizator, ContBancar cont, List<ContBancar> conturi)
+        {
             while (true)
             {
                 Console.Clear();
@@ -565,90 +574,34 @@ namespace AplicatieBanking
                 Console.WriteLine("2. Depunere Bani");
                 Console.WriteLine("3. Retragere Bani");
                 Console.WriteLine("4. Transfer Bani");
-                Console.WriteLine("5. Inchide sesiunea");
+                Console.WriteLine("5. Schimb Valutar");
+                Console.WriteLine("6. Inchide sesiunea");
                 Console.Write("Alege o optiune: ");
 
                 string optiune = Console.ReadLine();
                 switch (optiune)
                 {
                     case "1":
-                        Console.WriteLine($"\nSold curent: {cont.Sold} {cont.Moneda}");
-                        Console.ReadLine();
+                        AfisareSold(cont);
                         break;
 
                     case "2":
-                        Console.Write("\nIntrodu suma de depus: ");
-                        if (decimal.TryParse(Console.ReadLine(), out decimal sumaDepunere) && sumaDepunere > 0)
-                        {
-                            cont.Depunere(sumaDepunere);
-                            Console.WriteLine($"Depunere reusita! Sold nou: {cont.Sold} {cont.Moneda}");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Suma introdusa nu este valida!");
-                        }
-                        Console.ReadLine();
+                        DepunereBani(managerConturi, cont, conturi);
                         break;
 
                     case "3":
-                        Console.Write("\nIntrodu suma de retras: ");
-                        if (decimal.TryParse(Console.ReadLine(), out decimal sumaRetragere) && sumaRetragere > 0)
-                        {
-                            if (cont.Retragere(sumaRetragere))
-                            {
-                                Console.WriteLine($"Retragere reusita! Sold nou: {cont.Sold} {cont.Moneda}");
-                            }
-                            else
-                            {
-                                Console.WriteLine("Fonduri insuficiente sau limita depasita!");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Suma introdusa nu este valida!");
-                        }
-                        Console.ReadLine();
+                        RetragereBani(managerConturi, cont, conturi);
                         break;
 
                     case "4":
-                        Console.Write("\nIntrodu ID/IBAN-ul contului destinatar: ");
-                        string idDestinatar = Console.ReadLine();
-
-                        var contDestinatar = conturi.FirstOrDefault(c => c.ID == idDestinatar);
-
-                        if (contDestinatar == null)
-                        {
-                            Console.WriteLine("Cont destinatar inexistent.");
-                        }
-                        else if (cont.Moneda != contDestinatar.Moneda)
-                        {
-                            Console.WriteLine($"Moneda diferita! Ambele conturi trebuie să fie în aceeasi valuta ({cont.Moneda}).");
-                        }
-                        else
-                        {
-                            Console.Write("Introdu suma de transferat: ");
-                            if (decimal.TryParse(Console.ReadLine(), out decimal sumaTransfer) && sumaTransfer > 0)
-                            {
-                                if (cont.Transfer(contDestinatar, sumaTransfer))
-                                {
-                                    Console.WriteLine($"Transfer reusit! Sold nou: {cont.Sold} {cont.Moneda}");
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Fonduri insuficiente pentru transfer!");
-                                }
-                            }
-                            else
-                            {
-                                Console.WriteLine("Suma introdusa nu este valida!");
-                            }
-                        }
-                        Console.ReadLine();
+                        TransferBani(managerConturi, cont, conturi);
                         break;
 
                     case "5":
-                        Console.WriteLine("Sesiune inchisa.");
-                        Console.ReadLine();
+                        SchimbValutar(managerConturi, utilizator, cont, conturi);
+                        break;
+
+                    case "6":
                         return;
 
                     default:
@@ -658,6 +611,148 @@ namespace AplicatieBanking
                 }
             }
         }
+        static void AfisareSold(ContBancar cont)
+        {
+            Console.WriteLine($"\nSold curent: {cont.Sold} {cont.Moneda}");
+            Console.ReadLine();
+        }
+        static void DepunereBani (ManagerConturi managerConturi, ContBancar cont, List<ContBancar> conturi)
+        {
+            Console.Write("\nIntrodu suma de depus: ");
+            if (decimal.TryParse(Console.ReadLine(), out decimal sumaDepunere) && sumaDepunere > 0)
+            {
+                cont.Depunere(sumaDepunere);
+                Console.WriteLine($"Depunere reusita! Sold nou: {cont.Sold} {cont.Moneda}");
+                managerConturi.SalveazaConturi(conturi);
+            }
+            else
+            {
+                Console.WriteLine("Suma introdusa nu este valida!");
+            }
+            Console.ReadLine();
+        }
+        static void RetragereBani(ManagerConturi managerConturi, ContBancar cont, List<ContBancar> conturi)
+        {
+            Console.Write("\nIntrodu suma de retras: ");
+            if (decimal.TryParse(Console.ReadLine(), out decimal sumaRetragere) && sumaRetragere > 0)
+            {
+                if (cont.Retragere(sumaRetragere))
+                {
+                    Console.WriteLine($"Retragere reusita! Sold nou: {cont.Sold} {cont.Moneda}");
+                    managerConturi.SalveazaConturi(conturi);
+                }
+                else
+                {
+                    Console.WriteLine("Fonduri insuficiente sau limita depasita!");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Suma introdusa nu este valida!");
+            }
+            Console.ReadLine();
+        }
+        static void TransferBani(ManagerConturi managerConturi, ContBancar cont, List<ContBancar> conturi)
+        {
+            Console.Write("\nIntrodu ID/IBAN-ul contului destinatar: ");
+            string idDestinatar = Console.ReadLine();
 
+            var contDestinatar = conturi.FirstOrDefault(c => c.ID == idDestinatar);
+
+            if (contDestinatar == null)
+            {
+                Console.WriteLine("Cont destinatar inexistent.");
+            }
+            else if (cont.Moneda != contDestinatar.Moneda)
+            {
+                Console.WriteLine($"Moneda diferita! Va fi efectuata o conversie valutara: {cont.Moneda} -> {contDestinatar.Moneda} urmand cursul valutar : {CursValutar.SchimbValutar(cont.Moneda.ToString(), contDestinatar.Moneda.ToString())}");
+                Console.Write("Introdu suma de transferat: ");
+                if (decimal.TryParse(Console.ReadLine(), out decimal sumaTransfer) && sumaTransfer > 0)
+                {
+                    if (cont.Transfer(contDestinatar, sumaTransfer))
+                    {
+                        Console.WriteLine($"Transfer reusit! Sold nou: {cont.Sold} {cont.Moneda}");
+                        managerConturi.SalveazaConturi(conturi);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Fonduri insuficiente pentru transfer!");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Suma introdusa nu este valida!");
+                }
+            }
+            else if (cont.Moneda == contDestinatar.Moneda)
+            {
+                Console.Write("Introdu suma de transferat: ");
+                if (decimal.TryParse(Console.ReadLine(), out decimal sumaTransfer) && sumaTransfer > 0)
+                {
+                    if (cont.Transfer(contDestinatar, sumaTransfer))
+                    {
+                        Console.WriteLine($"Transfer reusit! Sold nou: {cont.Sold} {cont.Moneda}");
+                        managerConturi.SalveazaConturi(conturi);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Fonduri insuficiente pentru transfer!");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Suma introdusa nu este valida!");
+                }
+            }
+            Console.ReadLine();
+        }
+        static void SchimbValutar(ManagerConturi managerConturi, Utilizator utilizator, ContBancar cont, List<ContBancar> conturi)
+        {
+            var alteConturi = utilizator.Conturi.Where(c => c != cont).ToList();
+
+            if (alteConturi.Count == 0)
+            {
+                Console.WriteLine("Nu exista alte conturi pentru schimb valutar.");
+                Console.ReadLine();
+                return;
+            }
+
+            Console.WriteLine("=== Selecteaza contul destinatie pentru schimb valutar ===");
+            for (int i = 0; i < alteConturi.Count; i++)
+            {
+                var c = alteConturi[i];
+                Console.WriteLine($"{i + 1}. {c.NumeCont} (ID: {c.ID}, Moneda: {c.Moneda}, Sold: {c.Sold})");
+            }
+
+            Console.Write($"Alege contul destinatie (1 - {alteConturi.Count}): ");
+            if (!int.TryParse(Console.ReadLine(), out int idxDest) || idxDest < 1 || idxDest > alteConturi.Count)
+            {
+                Console.WriteLine("Optiune invalida!");
+                Console.ReadLine();
+                return;
+            }
+
+            var contDest = alteConturi[idxDest - 1];
+
+            Console.WriteLine($"Va fi efectuata o conversie valutara: {cont.Moneda} -> {contDest.Moneda} urmand cursul valutar : {CursValutar.SchimbValutar(cont.Moneda.ToString(), contDest.Moneda.ToString())}");
+            Console.Write("Introdu suma de schimbat: ");
+            if (!decimal.TryParse(Console.ReadLine(), out decimal suma) || suma <= 0)
+            {
+                Console.WriteLine("Suma invalida.");
+                Console.ReadLine();
+                return;
+            }
+
+            bool rezultat = cont.Transfer(contDest, suma);
+            if (rezultat)
+            {
+                Console.WriteLine("Transferul valutar a fost efectuat cu succes.");
+            }
+            else
+            {
+                Console.WriteLine("Transfer esuat. Verifica suma sau soldul disponibil.");
+            }
+            Console.ReadLine();
+        }
     }
 }

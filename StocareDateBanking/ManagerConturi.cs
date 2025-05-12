@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LibrarieModeleBanking;
+using UtilitareBanking;
 
 namespace StocareDateBanking
 {
@@ -15,11 +16,13 @@ namespace StocareDateBanking
         public ManagerConturi(string numeFisier)
         {
             this.numeFisier = numeFisier;
+
             Stream streamFisierText = File.Open(numeFisier, FileMode.OpenOrCreate);
             streamFisierText.Close();
+
         }
 
-        public void AddCont(List<ContBancar> conturi, Utilizator utilizator, string idBanca,monede moneda, string numeCont, string pin, decimal soldInitial)
+        public void AddCont(List<ContBancar> conturi, Utilizator utilizator, string idBanca, monede moneda, string numeCont, string pin, decimal soldInitial)
         {
             ContBancar contNou = new ContBancar(utilizator.CNP, idBanca, utilizator.Conturi, moneda, numeCont, pin, soldInitial);
 
@@ -30,6 +33,8 @@ namespace StocareDateBanking
             {
                 streamWriterFisierText.WriteLine(contNou.ConversieLaSir_PentruFisier());
             }
+
+            Logger.AddLog($"Cont adaugat: IBAN {contNou.ID} pentru utilizatorul {utilizator.Nume} {utilizator.Prenume} cu CNP {utilizator.CNP} - Banca: {utilizator.NumeBanca}");
         }
 
         public bool StergeCont(Utilizator utilizator, List<ContBancar> conturi, string idCont)
@@ -39,15 +44,17 @@ namespace StocareDateBanking
             if (contDeSters != null)
             {
                 utilizator.Conturi.Remove(contDeSters);
-
                 conturi.Remove(contDeSters);
 
                 SalveazaConturi(conturi);
+
+                Logger.AddLog($"Cont sters: IBAN {contDeSters.ID} pentru utilizatorul {utilizator.Nume} {utilizator.Prenume} cu CNP {utilizator.CNP} - Banca: {utilizator.NumeBanca}");
 
                 return true;
             }
             else
             {
+                Logger.AddLog($"Incercare esuata de stergere cont cu ID inexistent: {idCont}");
                 return false;
             }
         }
@@ -80,9 +87,10 @@ namespace StocareDateBanking
 
             return conturi;
         }
+
         public void SalveazaConturi(List<ContBancar> conturi)
         {
-            using (StreamWriter writer = new StreamWriter(numeFisier, false)) //rescrie (dupa incarcare)
+            using (StreamWriter writer = new StreamWriter(numeFisier, false)) // rescrie
             {
                 foreach (var cont in conturi)
                 {
