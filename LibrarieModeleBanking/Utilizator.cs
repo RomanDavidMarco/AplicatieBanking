@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LibrarieModeleBanking;
+using UtilitareBanking;
 
 namespace LibrarieModeleBanking
 {
@@ -26,9 +28,9 @@ namespace LibrarieModeleBanking
         public Utilizator(string banca, string nume, string prenume, string cnp, string parola)
         {
             NumeBanca = banca;
-            Nume = nume;
-            Prenume = prenume;
-            CNP = cnp;
+            Nume = nume.Trim();
+            Prenume = prenume.Trim();
+            CNP = cnp.Trim();
             Conturi = new List<ContBancar>();
             parolaCriptata = Securitate.CriptarePin(parola);
         }
@@ -103,6 +105,38 @@ namespace LibrarieModeleBanking
                 return true;
             }
             return false;
+        }
+
+        public bool ModificaUtilizator(string nouNume, string nouPrenume, string vecheParola, string nouParola)
+        {
+            bool modificat = false;
+
+            if (!string.IsNullOrWhiteSpace(nouNume) && nouNume.Trim() != Nume)
+            {
+                Nume = nouNume.Trim();
+                Logger.AddLog($"Numele utilizatorului {CNP} - {NumeBanca} a fost modificat în: {Nume}");
+                modificat = true;
+            }
+
+            if (!string.IsNullOrWhiteSpace(nouPrenume) && nouPrenume.Trim() != Prenume)
+            {
+                Prenume = nouPrenume.Trim();
+                Logger.AddLog($"Prenumele utilizatorului {CNP} - {NumeBanca} a fost modificat în: {Prenume}");
+                modificat = true;
+            }
+
+            // Verificăm parola
+            if (!string.IsNullOrWhiteSpace(vecheParola) && !string.IsNullOrWhiteSpace(nouParola))
+            {
+                if (Securitate.VerificaPin(vecheParola, parolaCriptata) && nouParola != vecheParola)
+                {
+                    parolaCriptata = Securitate.CriptarePin(nouParola);
+                    Logger.AddLog($"Parola utilizatorului {CNP} - {NumeBanca} a fost modificata");
+                    modificat = true;
+                }
+            }
+
+            return modificat;
         }
 
         public string ConversieLaSir_PentruFisier()

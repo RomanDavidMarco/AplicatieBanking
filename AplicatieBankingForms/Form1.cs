@@ -492,6 +492,11 @@ namespace AplicatieBankingForms
                     utilizatorSelectat = bancaSelectata.Utilizatori[lstUtilizatori.SelectedIndex];
                     AfiseazaFormularAutentificareUtilizator();
                 }
+                else
+                {
+                    utilizatorSelectat = null;
+                    AfiseazaFormularAutentificareUtilizator();
+                }
             };
             panelMain.Controls.Add(btnSelecteaza);
 
@@ -517,7 +522,7 @@ namespace AplicatieBankingForms
             Button btnInapoi = new Button
             {
                 Text = "Înapoi la Banci",
-                Location = new Point(440, 290),
+                Location = new Point(20, 330),
                 AutoSize = true
             };
             btnInapoi.Click += (s, e) => AfiseazaMeniuBanci();
@@ -846,6 +851,14 @@ namespace AplicatieBankingForms
             // Label CNP
             Label lblCnp = new Label { Text = "CNP Utilizator:", Location = new Point(20, 70), AutoSize = true };
             TextBox txtCnp = new TextBox { Location = new Point(20, 95), Width = 300 };
+            // Auto completare cnp daca a fost selectat un utilizator
+            if (utilizatorSelectat != null)
+            {
+                txtCnp.Text = utilizatorSelectat.CNP;
+                //pentru read only:
+                /*txtCnp.ReadOnly = true;
+                txtCnp.BackColor = Color.LightGray;*/
+            }
             panelMain.Controls.Add(lblCnp);
             panelMain.Controls.Add(txtCnp);
 
@@ -987,6 +1000,16 @@ namespace AplicatieBankingForms
                 IncarcaConturi(txtSearch.Text);
             };
 
+            // Buton Modificare Utilizator
+            Button btnModifica = new Button
+            {
+                Text = "Modificare Utilizator",
+                Location = new Point(20, 330),
+                AutoSize = true
+            };
+            btnModifica.Click += (s, e) => AfiseazaFormularModificareUtilizator();
+            panelMain.Controls.Add(btnModifica);
+
             // Buton "Adaugă Cont"
             Button btnAdaugaCont = new Button
             {
@@ -1018,7 +1041,8 @@ namespace AplicatieBankingForms
             Button btnInapoi = new Button
             {
                 Text = "Înapoi la utilizatori",
-                Location = new Point(410, 290)
+                Location = new Point(20, 370),
+                AutoSize = true
             };
             btnInapoi.Click += (s, e) => AfiseazaMeniuUtilizatori();
             panelMain.Controls.Add(btnInapoi);
@@ -1143,6 +1167,112 @@ namespace AplicatieBankingForms
             btnInapoi.Click += (s, e) => AfiseazaMeniuConturi();
             panelMain.Controls.Add(btnInapoi);
         }*/
+
+        private void AfiseazaFormularModificareUtilizator()
+        {
+            panelMain.Controls.Clear();
+
+            Label lblTitlu = new Label
+            {
+                Text = "Modificare Utilizator",
+                Font = new Font("Arial", 16, FontStyle.Bold),
+                Location = new Point(20, 20),
+                AutoSize = true
+            };
+            panelMain.Controls.Add(lblTitlu);
+
+            // Nume nou
+            Label lblNume = new Label { Text = "Nume nou:", Location = new Point(20, 70), AutoSize = true };
+            TextBox txtNume = new TextBox { Location = new Point(20, 95), Width = 300, Text = utilizatorSelectat.Nume };
+            panelMain.Controls.Add(lblNume);
+            panelMain.Controls.Add(txtNume);
+
+            // Prenume nou
+            Label lblPrenume = new Label { Text = "Prenume nou:", Location = new Point(20, 130), AutoSize = true };
+            TextBox txtPrenume = new TextBox { Location = new Point(20, 155), Width = 300, Text = utilizatorSelectat.Prenume };
+            panelMain.Controls.Add(lblPrenume);
+            panelMain.Controls.Add(txtPrenume);
+
+            // Parolă veche
+            Label lblParolaVeche = new Label { Text = "Parola veche:", Location = new Point(20, 190), AutoSize = true };
+            TextBox txtParolaVeche = new TextBox { Location = new Point(20, 215), Width = 300, PasswordChar = '*' };
+            panelMain.Controls.Add(lblParolaVeche);
+            panelMain.Controls.Add(txtParolaVeche);
+
+            // Parolă nouă
+            Label lblParolaNoua = new Label { Text = "Parola nouă:", Location = new Point(20, 250), AutoSize = true };
+            TextBox txtParolaNoua = new TextBox { Location = new Point(20, 275), Width = 300, PasswordChar = '*' };
+            panelMain.Controls.Add(lblParolaNoua);
+            panelMain.Controls.Add(txtParolaNoua);
+
+            // Buton Salvare
+            Button btnSalveaza = new Button
+            {
+                Text = "Salvează Modificările",
+                Location = new Point(20, 320)
+            };
+            btnSalveaza.Click += (s, e) =>
+            {
+                // Resetare culori
+                txtNume.BackColor = Color.White;
+                txtPrenume.BackColor = Color.White;
+                txtParolaVeche.BackColor = Color.White;
+                txtParolaNoua.BackColor = Color.White;
+
+                bool valid = true;
+
+                // Validări
+                if (Utilizator.ValidareNumePrenumeParolaUtilizator(txtNume.Text))
+                {
+                    txtNume.BackColor = Color.LightCoral;
+                    valid = false;
+                }
+
+                if (Utilizator.ValidareNumePrenumeParolaUtilizator(txtPrenume.Text))
+                {
+                    txtPrenume.BackColor = Color.LightCoral;
+                    valid = false;
+                }
+
+                if (!string.IsNullOrWhiteSpace(txtParolaNoua.Text) &&
+                    (string.IsNullOrWhiteSpace(txtParolaVeche.Text) || utilizatorSelectat.VerificarePinCriptat(txtParolaVeche.Text)))
+                {
+                    txtParolaVeche.BackColor = Color.LightCoral;
+                    txtParolaNoua.BackColor = Color.LightCoral;
+                    valid = false;
+                }
+
+                if (valid)
+                {
+                    bool rezultat = utilizatorSelectat.ModificaUtilizator(txtNume.Text, txtPrenume.Text, txtParolaVeche.Text, txtParolaNoua.Text);
+                    if (rezultat)
+                    {
+                        managerUtilizatori.SalveazaUtilizatori(utilizatori);
+                        MessageBox.Show("Modificare reușită!", "Succes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        AfiseazaMeniuConturi();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Nicio modificare efectuată sau parola veche este greșită.", "Informație", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Corectează câmpurile evidențiate!", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            };
+            panelMain.Controls.Add(btnSalveaza);
+
+            // Buton Înapoi
+            Button btnInapoi = new Button
+            {
+                Text = "Înapoi",
+                Location = new Point(170, 320)
+            };
+            btnInapoi.Click += (s, e) => AfiseazaMeniuConturi();
+            panelMain.Controls.Add(btnInapoi);
+        }
+
 
         private void AfiseazaFormularAdaugareCont()
         {
@@ -1529,11 +1659,21 @@ namespace AplicatieBankingForms
             btnSchimb.Click += (s, e) => AfiseazaFormularSchimbValutar();
             panelMain.Controls.Add(btnSchimb);
 
+            // Modificare ContBancar
+            Button btnModificare = new Button
+            {
+                Text = "6. Modificare Cont Bancar",
+                Location = new Point(20, 270),
+                Size = new Size(250, 30)
+            };
+            btnModificare.Click += (s, e) => AfiseazaFormularModificareContBancar();
+            panelMain.Controls.Add(btnModificare);
+
             // Buton Închide sesiunea
             Button btnInapoi = new Button
             {
-                Text = "6. Închide Sesiunea",
-                Location = new Point(20, 280),
+                Text = "7. Închide Sesiunea",
+                Location = new Point(20, 320),
                 Size = new Size(250, 30)
             };
             btnInapoi.Click += (s, e) => AfiseazaMeniuConturi();
@@ -1871,6 +2011,104 @@ namespace AplicatieBankingForms
                 Text = "Înapoi",
                 Location = new Point(150, 200),
                 AutoSize = true
+            };
+            btnInapoi.Click += (s, e) => AfiseazaMeniuATM();
+            panelMain.Controls.Add(btnInapoi);
+        }
+
+        private void AfiseazaFormularModificareContBancar()
+        {
+            panelMain.Controls.Clear();
+
+            Label lblTitlu = new Label
+            {
+                Text = "Modificare Cont Bancar",
+                Font = new Font("Arial", 16, FontStyle.Bold),
+                Location = new Point(20, 20),
+                AutoSize = true
+            };
+            panelMain.Controls.Add(lblTitlu);
+
+            // Nume nou
+            Label lblNume = new Label { Text = "Nume nou cont:", Location = new Point(20, 70), AutoSize = true };
+            TextBox txtNume = new TextBox { Location = new Point(20, 95), Width = 300, Text = contSelectatATM.NumeCont };
+            panelMain.Controls.Add(lblNume);
+            panelMain.Controls.Add(txtNume);
+
+            // PIN vechi
+            Label lblPinVechi = new Label { Text = "PIN vechi:", Location = new Point(20, 130), AutoSize = true };
+            TextBox txtPinVechi = new TextBox { Location = new Point(20, 155), Width = 300, PasswordChar = '*' };
+            panelMain.Controls.Add(lblPinVechi);
+            panelMain.Controls.Add(txtPinVechi);
+
+            // PIN nou
+            Label lblPinNou = new Label { Text = "PIN nou:", Location = new Point(20, 190), AutoSize = true };
+            TextBox txtPinNou = new TextBox { Location = new Point(20, 215), Width = 300, PasswordChar = '*' };
+            panelMain.Controls.Add(lblPinNou);
+            panelMain.Controls.Add(txtPinNou);
+
+            // Buton Salvare
+            Button btnSalveaza = new Button
+            {
+                Text = "Salvează Modificările",
+                Location = new Point(20, 260)
+            };
+            btnSalveaza.Click += (s, e) =>
+            {
+                txtNume.BackColor = Color.White;
+                txtPinVechi.BackColor = Color.White;
+                txtPinNou.BackColor = Color.White;
+
+                bool valid = true;
+
+                string numeNou = txtNume.Text.Trim();
+                string pinVechi = txtPinVechi.Text.Trim();
+                string pinNou = txtPinNou.Text.Trim();
+
+                // Validare nume
+                if (string.IsNullOrWhiteSpace(numeNou))
+                {
+                    txtNume.BackColor = Color.LightCoral;
+                    valid = false;
+                }
+
+                // Dacă s-a completat PIN nou, trebuie validat și cel vechi
+                if (!string.IsNullOrWhiteSpace(pinNou))
+                {
+                    if (string.IsNullOrWhiteSpace(pinVechi) || !Securitate.VerificaPin(pinVechi, contSelectatATM.PinCriptat) || !pinNou.All(char.IsDigit))
+                    {
+                        txtPinVechi.BackColor = Color.LightCoral;
+                        txtPinNou.BackColor = Color.LightCoral;
+                        valid = false;
+                    }
+                }
+
+                if (valid)
+                {
+                    bool modificat = contSelectatATM.ModificaContBancar(numeNou, pinVechi, pinNou);
+                    if (modificat)
+                    {
+                        managerConturi.SalveazaConturi(conturi);
+                        MessageBox.Show("Modificări salvate cu succes!", "Succes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        AfiseazaMeniuATM();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Nicio modificare efectuată (datele sunt identice sau PIN greșit).", "Informație", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Corectează câmpurile evidențiate!", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            };
+            panelMain.Controls.Add(btnSalveaza);
+
+            // Buton Înapoi
+            Button btnInapoi = new Button
+            {
+                Text = "Înapoi",
+                Location = new Point(170, 260)
             };
             btnInapoi.Click += (s, e) => AfiseazaMeniuATM();
             panelMain.Controls.Add(btnInapoi);

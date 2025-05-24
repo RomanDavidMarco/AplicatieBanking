@@ -39,7 +39,7 @@ namespace LibrarieModeleBanking
             ID = $"{idBanca}{moneda}{GenereazaIDRandom()}";
             NumarCont = GenereazaNumarCont(conturiExistente);
             Moneda = moneda;
-            NumeCont = nume;
+            NumeCont = nume.Trim();
             Sold = soldInitial;
             PinCriptat = Securitate.CriptarePin(pin);
         }
@@ -138,6 +138,28 @@ namespace LibrarieModeleBanking
                 Logger.AddLog($"Tranzactie de transfer valutar {Moneda} -> {destinatie.Moneda} a sumei {suma} {Moneda} -> {sumaSchimbata} {destinatie.Moneda} din contul {ID} in contul {destinatie.ID} urmand cursul valutar {rataConversie} esuata!");
             }
             return false;
+        }
+
+        public bool ModificaContBancar(string nouNume, string pinVechi, string pinNou)
+        {
+            bool modificat = false;
+
+            if (!string.IsNullOrWhiteSpace(nouNume) && nouNume.Trim() != NumeCont)
+            {
+                NumeCont = nouNume.Trim();
+                Logger.AddLog($"Numele contului {ID} a fost modificat în: {NumeCont}");
+                modificat = true;
+            }
+
+            if (!string.IsNullOrWhiteSpace(pinVechi) && !string.IsNullOrWhiteSpace(pinNou) &&
+                Securitate.VerificaPin(pinVechi, PinCriptat) && pinNou.All(char.IsDigit))
+            {
+                PinCriptat = Securitate.CriptarePin(pinNou);
+                Logger.AddLog($"PIN-ul contului {ID} a fost modificat");
+                modificat = true;
+            }
+
+            return modificat;
         }
 
         public string ConversieLaSir_PentruFisier()

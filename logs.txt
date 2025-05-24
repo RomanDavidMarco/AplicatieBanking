@@ -104,3 +104,27 @@
 [12/05/2025 12:43:41] Utilizator adaugat: William Lumi - CNP: 5050109330200 - Banca: transilvania
 [12/05/2025 12:44:01] Utilizator sters: William Lumi - CNP: 5050109330200 - Banca: transilvania
 [12/05/2025 12:56:16] Utilizator adaugat: Willy Lumi - CNP: 5040920330263 - Banca: transilvania
+[12/05/2025 14:35:13] Banca adaugata: AmericanExpress  cu ID: ROAMRE
+[12/05/2025 14:35:23] Banca stearsa: AmericanExpress  cu ID: ROAMRE
+[12/05/2025 15:06:09] Banca adaugata: AmericanExpress cu ID: ROAMRN
+[12/05/2025 15:06:31] Banca stearsa: AmericanExpress cu ID: ROAMRN
+[12/05/2025 15:08:12] Banca adaugata: AmericanExpress cu ID: ROAMRN
+[12/05/2025 15:08:58] Utilizator adaugat: Marco Roman - CNP: 5050109330207 - Banca: AmericanExpress
+[12/05/2025 15:09:57] Cont adaugat: IBAN ROAMRNRON733256 pentru utilizatorul Marco Roman cu CNP 5050109330207 - Banca: AmericanExpress
+[12/05/2025 15:42:34] Numele contului ROBTRLEUR788307 a fost modificat în: ContEuro
+[12/05/2025 15:43:22] PIN-ul contului ROBTRLEUR788307 a fost modificat.
+[12/05/2025 15:44:01] PIN-ul contului ROBTRLEUR788307 a fost modificat.
+[12/05/2025 15:44:54] Numele contului ROBTRLEUR788307 a fost modificat în: ContEur
+[12/05/2025 15:58:22] Utilizatorul 5050109330207 - transilvania a fost modificat!
+[12/05/2025 15:59:27] Numele contului ROBTRLEUR788307 a fost modificat în: ContEuro
+[12/05/2025 15:59:27] Contul Bancar ROBTRLEUR788307 a fost modificat!
+[12/05/2025 16:05:58] Numele utilizatorului 5050109330207 - transilvania a fost modificat în: Marco.
+[12/05/2025 16:05:58] Parola utilizatorului 5050109330207 - transilvania a fost modificata.
+[12/05/2025 16:06:04] Parola utilizatorului 5050109330207 - transilvania a fost modificata.
+[24/05/2025 15:47:29] Tranzactie de depunere a sumei 123 EUR in contul ROBTRLEUR788307 efectuata cu succes!
+[24/05/2025 15:47:34] Tranzactie de retragere a sumei 1234 EUR din contul ROBTRLEUR788307 efectuata cu succes!
+[24/05/2025 15:48:09] Tranzactie de depunere a sumei 505.56 RON in contul ROBTRLRON290548 efectuata cu succes!
+[24/05/2025 15:48:09] Tranzactie de transfer valutar EUR -> RON a sumei 100 EUR -> 505.56 RON din contul ROBTRLEUR788307 in contul ROBTRLRON290548 urmand cursul valutar 5.0556 efectuata cu succes!
+[24/05/2025 15:51:19] Tranzactie de depunere a sumei 6238.61 RON in contul ROBTRLRON290548 efectuata cu succes!
+[24/05/2025 15:51:19] Tranzactie de transfer valutar EUR -> RON a sumei 1234 EUR -> 6238.61 RON din contul ROBTRLEUR788307 in contul ROBTRLRON290548 urmand cursul valutar 5.0556 efectuata cu succes!
+[24/05/2025 16:00:41] Cont adaugat: IBAN ROBTRLEUR373628 pentru utilizatorul Catalin Cata cu CNP 5010101407891 - Banca: transilvania

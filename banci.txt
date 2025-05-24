@@ -1,3 +1,4 @@
 transilvania|ROBTRL|
 BRD|ROBRDL|
 SanPaolo|ROSNPL|
+AmericanExpress|ROAMRN|
